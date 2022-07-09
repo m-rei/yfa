@@ -1,0 +1,10 @@
+
+<ng-container *ngIf="!hasProfileData(); else renderProfile">
+    <button mat-button>Setup profile...</button>
+</ng-container>
+<ng-template #renderProfile>
+    <div class="profile">
+        <img class="avatar mat-elevation-z8" src="{{profile.avatar}}"><br>
+        <h4 class="name">{{profile.name}}</h4>
+    </div>
+</ng-template>

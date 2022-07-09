@@ -1,0 +1,17 @@
+<div class="row">
+  <mat-form-field>
+    <mat-label>Name</mat-label>
+    <input matInput placeholder="Name..." [(ngModel)]="profile.name">
+  </mat-form-field>
+</div>
+<div class="row">
+  <mat-form-field>
+    <mat-label>Avatar URL</mat-label>
+    <input matInput placeholder="Avatar URL..." [(ngModel)]="profile.avatar">
+  </mat-form-field>
+</div>
+<div class="row">
+  <div class="col-sm-12">
+    <button type="button" style="float: right;" mat-button (click)="save()">save</button>
+  </div>
+</div>
