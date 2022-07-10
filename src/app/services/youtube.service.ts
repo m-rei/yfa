@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Video } from '../model/video.model';
 
 @Injectable({
   providedIn: 'root'
@@ -47,7 +48,7 @@ export class YoutubeService {
 
   getFeedsByChannelID(channelID: string, successHandler?: any, errorHandler?: any) {
     const url = YoutubeService.FEEDS_URL + 'channel_id=' + channelID;
-    this.getFeeds(url, successHandler, errorHandler);
+    return this.getFeeds(url, successHandler, errorHandler);
   }
 
   getFeedsByUser(user: string, successHandler: any, errorHandler?: any) {
@@ -82,6 +83,26 @@ export class YoutubeService {
     const ret = xmlDoc.querySelector('feed id').textContent.split(':');
     if (ret.length == 0) return '';
     return ret[ret.length-1];
+  }
+
+  getVideosFromFeeds(xmlFeeds: string, channelID: string, latestNVideos: number = 5): Video[] {
+    const xmlDoc = new DOMParser().parseFromString(xmlFeeds, "text/xml");
+    const entries = xmlDoc.querySelectorAll('feed entry');
+    let ret: Video[] = [];
+    for (let i = 0; i < Math.min(entries.length, latestNVideos); i++) {
+      const entry = entries[i];
+      let video = new Video(channelID, null, null, null);
+
+      const idArr = entry.querySelector('id').textContent.split(':');
+      if (idArr.length == 0) continue;
+
+      video.videoId = idArr[idArr.length-1];
+      video.title = entry.querySelector('title').textContent;
+      video.date =  entry.querySelector('published').textContent;
+
+      ret.push(video);
+    }
+    return ret;
   }
 
   private disableConsentRedirect(channelURL: string): string {

@@ -1,5 +1,5 @@
 import { ChannelService } from './../../services/channel.service';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, PACKAGE_ROOT_URL, ViewChild } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Channel } from 'src/app/model/channel.model';
 import { YoutubeService } from 'src/app/services/youtube.service';
@@ -27,6 +27,22 @@ export class SubscriptionsComponent implements OnInit {
 
   ngOnInit(): void {
     this.channels = this.channelService.loadChannels();
+
+    // TODO remove me#
+    /*
+    const jsonData = JSON.stringify(this.channels);
+    console.log('JSON data in kb: ' + jsonData.length/1024);
+    const csvData = this.channels
+      .map(v => v.account + '|' + v.id + '|' + v.name)
+      .join('|');
+    console.log('CSV data in kb: ' + csvData.length/1024);
+    
+    const output = this.compress(csvData);
+    console.log('CSV compressed in kb: ' + output.length/1024);
+    console.log(this.decompress(output).length);
+    console.log(csvData.length);
+    console.log(this.decompress(output) === csvData);
+    */
   }
 
   getChannelUrlExample() {

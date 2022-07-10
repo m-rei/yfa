@@ -22,3 +22,11 @@ Angular project with...:
     	- only when account # > 0
     	- renders over view, locking it
 - persisted in local storage
+
+# TODO
+
+- compression for localstorage persistence:
+  - dont persist jsons, but CSV for channels
+    - so instead of: [{"account":"fun","id":"UC1v2bdQblPEcYdoKuJtY0lA","name":"Anna's Analysis"}]
+    - just use: fun|UC1v2bdQblPEcYdoKuJtY0lA|Anna's Analysis
+    - and gzip & b64
