@@ -1,3 +1,4 @@
+import { VideoService } from './../../services/video.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { YoutubeService } from 'src/app/services/youtube.service';
 import { AccountToolbarComponent } from 'src/app/account-toolbar/account-toolbar.component';
@@ -8,6 +9,8 @@ import { Video } from 'src/app/model/video.model';
 import { SNACKBAR_DEFAULT_CONFIG } from 'src/app/util/defaults';
 import { zip } from 'rxjs';
 import { Account } from 'src/app/model/account.model';
+import * as moment from 'moment';
+import { FormatUtil } from 'src/app/util/format';
 
 @Component({
   selector: 'app-home',
@@ -25,11 +28,14 @@ export class HomeComponent implements OnInit {
   constructor(
     private channelService: ChannelService,
     private youtubeService: YoutubeService,
+    private videoService: VideoService,
     private snackbar: MatSnackBar,
     ) { }
 
   ngOnInit(): void {
     this.channels = this.channelService.loadChannels();
+    this.videos = this.videoService.loadVideos();
+    this.processVideos();
   }
 
   onSyncClick() {
@@ -50,8 +56,10 @@ export class HomeComponent implements OnInit {
     }
     
     const finishedHandler = () => {
-      // TODO persist?
-      this.videos = newVideos;
+      this.videos = newVideos.sort((a,b) => {
+        return moment(a.date).isAfter(b.date) ? -1 : 1;
+      });
+      this.videoService.saveVideos(this.videos);
       this.processVideos();
       this.snackbar.open("finished syncing!", 'close', SNACKBAR_DEFAULT_CONFIG);
       this.toolbar.syncing = false;
@@ -78,7 +86,6 @@ export class HomeComponent implements OnInit {
       this.accountVideos.get(account).push(video);
     });
 
-    console.log(this.accountVideos);
   }
 
   getVideosForActiveAccount(): Video[] {
@@ -90,5 +97,9 @@ export class HomeComponent implements OnInit {
 
   getChannelByChannelId(channelId: string) {
     return this.channels.find(c => c.id == channelId);
+  }
+
+  formattedDate(date: string): string {
+    return FormatUtil.formatDate(date);
   }
 }

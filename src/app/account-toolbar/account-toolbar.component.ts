@@ -71,4 +71,8 @@ export class AccountToolbarComponent implements OnInit {
     this.progress100 = 0;
     this.onSyncClick.next(null);
   }
+
+  formattedProgress(): string {
+    return '' + Math.round(this.progress100*100)/100;
+  }
 }

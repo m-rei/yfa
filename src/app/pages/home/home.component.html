@@ -2,9 +2,9 @@
     <app-account-toolbar [renderSyncButton]="true" (onSyncClick)="onSyncClick()"></app-account-toolbar>
     <div *ngFor="let video of getVideosForActiveAccount()">
         <span>{{video.channelId}}</span>|
-        <span>{{getChannelByChannelId(video.channelId).name}}</span>|
+        <span>{{getChannelByChannelId(video.channelId)?.name}}</span>|
         <span>{{video.videoId}}</span>|
         <span>{{video.title}}</span>|
-        <span>{{video.date}}</span>
+        <span>{{formattedDate(video.date)}}</span>
     </div>
 </div>
