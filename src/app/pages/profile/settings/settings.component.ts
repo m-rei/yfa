@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ProfileModel } from 'src/app/model/profile.model';
-import { ProfileSettingsService } from 'src/app/services/profile-settings.service';
+import { Profile } from 'src/app/model/profile.model';
+import { ProfileService } from 'src/app/services/profile.service';
 
 @Component({
   selector: 'app-settings',
@@ -9,19 +9,19 @@ import { ProfileSettingsService } from 'src/app/services/profile-settings.servic
 })
 export class SettingsComponent implements OnInit {
 
-  public profile: ProfileModel;
+  public profile: Profile;
 
   constructor(
-    private profileSettingsService: ProfileSettingsService
+    private profileService: ProfileService
     ) { 
   }
 
   ngOnInit(): void {
-    this.profile = this.profileSettingsService.loadSettings();
+    this.profile = this.profileService.loadProfile();
   }
 
   save() {
-    this.profileSettingsService.saveSettings(this.profile);
+    this.profileService.saveProfile(this.profile);
   }
 
 }

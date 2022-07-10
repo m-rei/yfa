@@ -1,6 +1,8 @@
+@import "util/variables"
+
 mat-toolbar
-    background: #6173a0
-    color: white
+    background: $blue
+    color: $blue-light
     span
         padding-left: 16px
 .sidenav-container
@@ -9,8 +11,8 @@ mat-sidenav
     margin: 16px
     width: 200px
     border-right: none
-    background: #2c364f
-    color: white
+    background: $blue
+    color: $blue-light
     padding: 16px
     text-align: center
 .content
@@ -33,5 +35,3 @@ mat-divider
     background-color: rgba(255, 255, 255, 0.5)
 ::ng-deep mat-icon[svgicon=yt-sub] > svg
     vertical-align: unset
-.active
-    background-color: rgba(255,255,255,0.2)

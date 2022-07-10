@@ -1,1 +1,47 @@
-<p>subscriptions works!</p>
+<div class="subscription-container">
+    <app-account-toolbar [showChannelCounts]="true" [channels]="channels"></app-account-toolbar>
+
+    <div class="row">
+        <div class="col-sm-11">
+            <mat-form-field>
+                <mat-label>Add channel, example URL: {{getChannelUrlExample()}}</mat-label>
+                <input matInput [(ngModel)]="channelURL" (keyup.enter)="addChannel()">
+            </mat-form-field>
+        </div>
+        <button mat-button color="primary" class="col-sm-1" (click)="addChannel()" [disabled]="!channelURL">
+            <mat-icon>add</mat-icon>
+        </button>
+    </div>
+
+    <ng-container *ngIf="hasChannels()">
+        <mat-divider></mat-divider>
+
+        <ng-container *ngFor="let channel of channels; let i = index">
+            <div *ngIf="canRenderChannel(channel)" [ngClass]="{'row': true, 'odd-row': i % 2 == 1}">
+                <button mat-button class="col-sm-1" (click)="redirectToAccount(channel)">
+                    <mat-icon>arrow_circle_right</mat-icon>
+                </button>
+                <div class="col-sm-3">
+                    <mat-form-field>
+                        <mat-label>Account</mat-label>
+                        <mat-select [(value)]="channel.account" (selectionChange)="channelAccountChanged()">
+                            <mat-option> - </mat-option>
+                            <mat-option *ngFor="let account of accountToolbar.accounts" [value]="account.name">
+                                {{account.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-sm-7">
+                    <mat-form-field>
+                        <mat-label>Name</mat-label>
+                        <input matInput disabled [(ngModel)]="channel.name" [matTooltip]="'Channel ID: ' + channel.id">
+                    </mat-form-field>
+                </div>
+                <button mat-button color="warn" class="col-sm-1" (click)="deleteChannel(i)">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </div>
+        </ng-container>
+    </ng-container>
+</div>

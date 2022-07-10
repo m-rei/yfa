@@ -1,3 +1,4 @@
+import { BackupComponent } from './pages/backup/backup.component';
 import { HomeComponent } from './pages/home/home.component';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -11,6 +12,7 @@ import { AccountsComponent } from './pages/accounts/accounts.component';
 import { SubscriptionsComponent } from './pages/subscriptions/subscriptions.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { SettingsComponent } from './pages/profile/settings/settings.component';
+import { AccountToolbarComponent } from './account-toolbar/account-toolbar.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +21,9 @@ import { SettingsComponent } from './pages/profile/settings/settings.component';
     AccountsComponent,
     SubscriptionsComponent,
     ProfileComponent,
-    SettingsComponent
+    SettingsComponent,
+    BackupComponent,
+    AccountToolbarComponent
   ],
   imports: [
     AppCommonModulesModule,

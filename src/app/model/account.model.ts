@@ -1,6 +1,6 @@
-export class Profile {
+export class Account {
     constructor(
         public name: string,
-        public avatar: string,
+        public order: number,
     ) {}
 }

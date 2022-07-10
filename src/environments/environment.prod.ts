@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  channelURLExample: 'https://www.youtube.com/c/LinusTechTips',
 };

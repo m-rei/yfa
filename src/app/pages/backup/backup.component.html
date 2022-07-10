@@ -1,0 +1,55 @@
+<div class="import-container">
+    <div class="row">
+        <div class="col-sm-6 mt-2">
+            <mat-card>
+                <mat-card-title>Import</mat-card-title>
+                <mat-card-subtitle>Import an opml file into VIFA</mat-card-subtitle>
+                <mat-card-content>
+                    <mat-form-field>
+                        <mat-label>Account to merge into</mat-label>
+                        <mat-select [(value)]="importAccount">
+                            <mat-option [value]="allAccounts"> * </mat-option>
+                            <mat-option *ngFor="let account of accounts" [value]="account">
+                                {{account.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <input #fileInput type="file" hidden (change)="onFileSeleced($event)">
+                    <button mat-button (click)="fileInput.click()">chose file</button>
+                    <span>{{importOpmlFilename}}</span>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-button [disabled]="!importOpmlContent || importing" (click)="importOPMLFile()">
+                        <mat-icon>file_upload</mat-icon>
+                        import
+                    </button>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+        <div class="col-sm-6 mt-2">
+            <mat-card>
+                <mat-card-title>Export</mat-card-title>
+                <mat-card-subtitle>Export to an opml file from VIFA</mat-card-subtitle>
+                <mat-card-content>
+                    <mat-form-field>
+                        <mat-label>Account to export from</mat-label>
+                        <mat-select [(value)]="exportAccount">
+                            <mat-option [value]="allAccounts"> * </mat-option>
+                            <mat-option [value]="lackingAccounts"> - </mat-option>
+                            <mat-option *ngFor="let account of accounts" [value]="account">
+                                {{account.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-button (click)="exportOPMLFile()">
+                        <mat-icon>file_download</mat-icon>
+                        export
+                    </button>
+                    <a hidden #exportNode></a>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+    </div>
+</div>

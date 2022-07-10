@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Channel } from 'src/app/model/channel.model';
+import { ChannelService } from 'src/app/services/channel.service';
 
 @Component({
   selector: 'app-home',
@@ -6,10 +8,14 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./home.component.sass']
 })
 export class HomeComponent implements OnInit {
+  channels: Channel[] = [];
 
-  constructor() { }
+  constructor(
+    private channelService: ChannelService,
+    ) { }
 
   ngOnInit(): void {
+    this.channels = this.channelService.loadChannels();
   }
 
 }

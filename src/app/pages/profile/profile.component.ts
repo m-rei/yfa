@@ -1,5 +1,5 @@
-import { ProfileSettingsService } from 'src/app/services/profile-settings.service';
-import { ProfileModel } from 'src/app/model/profile.model';
+import { ProfileService } from 'src/app/services/profile.service';
+import { Profile } from 'src/app/model/profile.model';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
@@ -10,16 +10,16 @@ import { Subscription } from 'rxjs';
 })
 export class ProfileComponent implements OnInit, OnDestroy {
 
-  profile: ProfileModel;
+  profile: Profile;
   profileChangeSubscription: Subscription;
 
   constructor(
-    private profileSettingsService: ProfileSettingsService,
+    private profileService: ProfileService,
   ) { }
 
   ngOnInit(): void {
-    this.profile = this.profileSettingsService.loadSettings();
-    this.profileChangeSubscription = this.profileSettingsService.profileChanged.subscribe(profile => {
+    this.profile = this.profileService.loadProfile();
+    this.profileChangeSubscription = this.profileService.profileChanged.subscribe(profile => {
       this.profile = profile;
     })
   }

@@ -1,0 +1,18 @@
+<mat-toolbar>
+    <button mat-button (click)="selectAllAccounts()"
+        [ngClass]="{'toolbar-accounts': true, 'active': allAccountsSelected()}"
+        matTooltip="all accounts">
+        *{{getAllAccountsTooltip()}}
+    </button>
+    <button mat-button (click)="selectLackingAccounts()"
+        [ngClass]="{'toolbar-accounts': true, 'active': lackingAccountsSelected()}"
+        matTooltip="no account associated">
+        -{{getLackingAccountsTooltip()}}
+    </button>
+    <ng-container *ngFor="let account of accounts">
+        <button mat-button [ngClass]="{'toolbar-accounts': true, 'active': account.name == selectedAccount.name}"
+            (click)="selectAccount(account)">
+            {{account.name}}{{getAccountsTooltip(account)}}
+        </button>
+    </ng-container>
+</mat-toolbar>

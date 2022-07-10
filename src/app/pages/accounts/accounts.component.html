@@ -1,1 +1,38 @@
-<p>accounts works!</p>
+
+<div class="account-container">
+    <div class="row">
+        <div class="col-sm-11">
+            <mat-form-field>
+                <mat-label>Name</mat-label>
+                <input matInput [(ngModel)]="accountName" (keyup.enter)="addAccount()">
+            </mat-form-field>
+        </div>
+        <button #addBtn mat-button color="primary" class="col-sm-1" (click)="addAccount()" [disabled]="!accountName">
+            <mat-icon>add</mat-icon>
+        </button>
+    </div>
+
+    <ng-container *ngIf="accounts && accounts.length > 0">
+        <mat-divider ></mat-divider>
+
+        <ng-container *ngFor="let account of accounts; let i = index">
+            <div [ngClass]="{'row': true, 'odd-row': i % 2 == 1}">
+                <div class="col-sm-3">
+                    <mat-form-field>
+                        <mat-label>Order</mat-label>
+                        <input matInput type="number" min="0" [(ngModel)]="account.order" (change)="orderChanged()">
+                    </mat-form-field>
+                </div>
+                <div class="col-sm-7">
+                    <mat-form-field>
+                        <mat-label>Name</mat-label>
+                        <input matInput [(ngModel)]="account.name" (change)="nameChanged()">
+                    </mat-form-field>
+                </div>
+                <button mat-button color="warn" class="col-sm-1" (click)="deleteAccount(i)">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </div>
+        </ng-container>
+</ng-container>
+</div>
