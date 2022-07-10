@@ -39,7 +39,7 @@ export class HomeComponent implements OnInit {
   onSyncClick() {
     let newVideos: Video[] = [];
     let promises: any[] = [];
-    let finished = 1;
+    let finished = 0;
     for (let i = 0; i < this.channels.length; i++) {
       const channel = this.channels[i];
 
@@ -61,7 +61,6 @@ export class HomeComponent implements OnInit {
       this.processVideos();
       this.snackbar.open("finished syncing!", 'close', SNACKBAR_DEFAULT_CONFIG);
       this.toolbar.syncing = false;
-      console.log(this.videos);
     }
     if (promises.length == 0) {
       finishedHandler();

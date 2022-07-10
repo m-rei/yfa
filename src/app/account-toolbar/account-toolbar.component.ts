@@ -1,4 +1,6 @@
+import { FormatUtil } from 'src/app/util/format';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import * as moment from 'moment';
 import { Account } from '../model/account.model';
 import { Channel } from '../model/channel.model';
 import { PersistenceService } from '../services/persistence.service';
@@ -17,6 +19,7 @@ export class AccountToolbarComponent implements OnInit {
   @Output() onSyncClick = new EventEmitter<any>();
   syncing: boolean = false;
   progress100 = 0;
+  lastSync: moment.Moment = null
 
   accounts: Account[] = [];
   allAccounts: Account = new Account("*", 0);
@@ -29,6 +32,7 @@ export class AccountToolbarComponent implements OnInit {
 
   ngOnInit(): void {
     this.accounts = this.persistenceService.loadAccounts();
+    this.lastSync = this.persistenceService.loadLastSync();
   }
 
   selectAllAccounts() {
@@ -67,9 +71,15 @@ export class AccountToolbarComponent implements OnInit {
   }
 
   sync() {
+    this.lastSync = moment();
+    this.persistenceService.saveLastSync(this.lastSync);
     this.syncing = true;
     this.progress100 = 0;
     this.onSyncClick.next(null);
+  }
+
+  getLastSyncTooltip() {
+    return 'Last sync: ' + FormatUtil.formatDate(this.lastSync.toString());
   }
 
   formattedProgress(): string {

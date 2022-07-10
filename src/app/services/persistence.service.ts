@@ -1,4 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
+import * as moment from 'moment';
+import { Moment } from 'moment';
 import { Account } from '../model/account.model';
 import { Channel } from '../model/channel.model';
 import { Profile } from '../model/profile.model';
@@ -13,6 +15,7 @@ export class PersistenceService {
   private static LS_CHANNELS_KEY = 'channels';
   private static LS_PROFILE_KEY = 'profile';
   private static LS_VIDEOS_KEY = 'videos';
+  private static LS_LAST_SYNC_KEY = 'last_sync';
   
   profileChanged: EventEmitter<Profile> = new EventEmitter();
 
@@ -93,5 +96,13 @@ export class PersistenceService {
       .map(v => v.channelId + '|' + v.videoId + '|' + FormatUtil.escape(v.title,'|') + '|' + v.date)
       .join('|');
     localStorage.setItem(PersistenceService.LS_VIDEOS_KEY, data);
+  }
+
+  public loadLastSync(): Moment {
+    return moment(localStorage.getItem(PersistenceService.LS_LAST_SYNC_KEY));
+  }
+
+  public saveLastSync(m: Moment) {
+    localStorage.setItem(PersistenceService.LS_LAST_SYNC_KEY, m.toString());
   }
 }

@@ -16,7 +16,7 @@
         </button>
     </ng-container>
     <ng-container *ngIf="renderSyncButton">
-        <button mat-button (click)="sync()" [disabled]="syncing">
+        <button mat-button (click)="sync()" [disabled]="syncing" [matTooltip]="getLastSyncTooltip()">
             <mat-icon>{{syncing ? 'sync_lock' : 'sync'}}</mat-icon>
             <span [ngClass]="{'syncing-span': syncing}">{{syncing ? 'syncing... (' + formattedProgress() + ' %)' : 'sync'}}</span>
             <mat-progress-bar *ngIf="syncing" mode="determinate" [value]="progress100"></mat-progress-bar>
