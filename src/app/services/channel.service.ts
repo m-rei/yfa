@@ -1,5 +1,6 @@
 import { Channel } from './../model/channel.model';
 import { Injectable } from '@angular/core';
+import { Account } from '../model/account.model';
 
 @Injectable({
   providedIn: 'root'
@@ -20,5 +21,15 @@ export class ChannelService {
   public saveChannels(channels: Channel[]) {
     const channelsStringified = JSON.stringify(channels);
     localStorage.setItem(ChannelService.LS_CHANNELS_KEY, channelsStringified);
+  }
+
+  public adjustOrphanedChannels(accounts: Account[]) {
+    let channels = this.loadChannels();
+    channels.forEach(c => {
+      if (!accounts.find(a => a.name == c.account)) {
+        c.account = '';
+      }
+    })
+    this.saveChannels(channels);
   }
 }

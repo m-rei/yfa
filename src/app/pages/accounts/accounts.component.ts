@@ -1,3 +1,4 @@
+import { ChannelService } from 'src/app/services/channel.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AccountService } from './../../services/account.service';
 import { Component, OnInit } from '@angular/core';
@@ -16,6 +17,7 @@ export class AccountsComponent implements OnInit {
 
   constructor(
     private accountService: AccountService,
+    private channelService: ChannelService,
     private snackbar: MatSnackBar,
   ) { }
 
@@ -48,5 +50,6 @@ export class AccountsComponent implements OnInit {
   
   nameChanged() {
     this.accountService.saveAccounts(this.accounts);
+    this.channelService.adjustOrphanedChannels(this.accounts);
   }
 }

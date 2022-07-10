@@ -62,7 +62,7 @@ export class SubscriptionsComponent implements OnInit {
   addChannel() {
     const successHandler = (channelID: string) => {
       const account = this.accountToolbar.allAccountsSelected() || this.accountToolbar.lackingAccountsSelected() ?
-        null : this.accountToolbar.selectedAccount.name;
+        '' : this.accountToolbar.selectedAccount.name;
       this.addChannelByID(account, channelID);
     }
     const errorHandler = (errorMsg: string) => {
