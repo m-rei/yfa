@@ -2,7 +2,7 @@ import { PersistenceService } from './../../services/persistence.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { YoutubeService } from 'src/app/services/youtube.service';
 import { AccountToolbarComponent } from 'src/app/account-toolbar/account-toolbar.component';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { Channel } from 'src/app/model/channel.model';
 import { Video } from 'src/app/model/video.model';
 import { SNACKBAR_DEFAULT_CONFIG } from 'src/app/util/defaults';
@@ -10,17 +10,23 @@ import { zip } from 'rxjs';
 import { Account } from 'src/app/model/account.model';
 import * as moment from 'moment';
 import { FormatUtil } from 'src/app/util/format';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.sass']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, AfterViewInit {
 
   @ViewChild(AccountToolbarComponent, {static: true}) toolbar: AccountToolbarComponent;
+  @ViewChild('p', {static: true}) paginator: MatPaginator;
+  
   channels: Channel[] = [];
   videos: Video[] = [];
+
+  filterText: string = '';
+  filteredVideos: Video[] = [];
 
   accountVideos: Map<Account, Video[]> = new Map();
 
@@ -33,7 +39,10 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     this.channels = this.persistenceService.loadChannels();
     this.videos = this.persistenceService.loadVideos();
-    this.processVideos();
+  }
+
+  ngAfterViewInit(): void {
+    this.doFilter();
   }
 
   onSyncClick() {
@@ -69,13 +78,29 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  filterChanged() {
+    this.doFilter();
+  }
+
+  doFilter() {
+    if (!this.filterText) {
+      this.filteredVideos = this.videos;
+    } else {
+      this.filteredVideos = this.videos.filter(v => {
+        let account = this.channels.find(c => c.id == v.channelId);
+        return (account.name + v.title).toLowerCase().indexOf(this.filterText.toLowerCase()) != -1
+      });
+    }
+    this.processVideos();
+  }
+
   private processVideos() {
     this.accountVideos = new Map();
 
     this.accountVideos.set(this.toolbar.lackingAccounts, []);
     this.toolbar.accounts.forEach(account => this.accountVideos.set(account, []));
 
-    this.videos.forEach(video => {
+    this.filteredVideos.forEach(video => {
       const channel = this.getChannelByChannelId(video.channelId);
       if (!channel) return;
       let account = this.toolbar.accounts.find(a => a.name == channel.account);
@@ -87,7 +112,7 @@ export class HomeComponent implements OnInit {
 
   getVideosForActiveAccount(): Video[] {
     if (this.toolbar.allAccountsSelected()) {
-      return this.videos;
+      return this.filteredVideos;
     }
     return this.accountVideos.get(this.toolbar.selectedAccount);
   }
@@ -98,5 +123,9 @@ export class HomeComponent implements OnInit {
 
   formattedDate(date: string): string {
     return FormatUtil.formatDate(date);
+  }
+  
+  toolbarAccountChanged() {
+    this.paginator.firstPage();
   }
 }

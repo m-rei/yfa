@@ -1,6 +1,21 @@
 <div class="home-container">
-    <app-account-toolbar [renderSyncButton]="true" (onSyncClick)="onSyncClick()"></app-account-toolbar>
-    <div *ngFor="let video of getVideosForActiveAccount()">
+    <app-account-toolbar [renderSyncButton]="true" (onSyncClick)="onSyncClick()" (onAccountClick)="toolbarAccountChanged()"></app-account-toolbar>
+    <div class="row">
+        <div class="col-sm-12">
+            <mat-form-field>
+                <mat-label>Filter</mat-label>
+                <input matInput [(ngModel)]="filterText" (keyup)="filterChanged()">
+            </mat-form-field>
+        </div>            
+    </div>
+    <mat-paginator #p
+        fixed
+        [length]="getVideosForActiveAccount().length"
+        [pageSize]="15"
+        [pageIndex]="0"
+        [showFirstLastButtons]="true">
+    </mat-paginator>
+    <div *ngFor="let video of getVideosForActiveAccount() | slice: (p.pageIndex)*p.pageSize : (p.pageIndex+1)*p.pageSize;">
         <span>{{video.channelId}}</span>|
         <span>{{getChannelByChannelId(video.channelId)?.name}}</span>|
         <span>{{video.videoId}}</span>|

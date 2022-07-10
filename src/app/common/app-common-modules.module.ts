@@ -13,6 +13,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 @NgModule({
   declarations: [],
@@ -31,6 +32,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     MatSelectModule,
     MatCardModule,
     MatProgressBarModule,
+    MatPaginatorModule,
   ],
   exports: [
     HttpClientModule,
@@ -47,6 +49,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     MatSelectModule,
     MatCardModule,
     MatProgressBarModule,
+    MatPaginatorModule,
   ]
 })
 export class AppCommonModulesModule { }

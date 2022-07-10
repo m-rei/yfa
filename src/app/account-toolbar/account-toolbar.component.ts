@@ -12,6 +12,8 @@ import { PersistenceService } from '../services/persistence.service';
 })
 export class AccountToolbarComponent implements OnInit {
 
+  @Output() onAccountClick = new EventEmitter<Account>();
+
   @Input() showChannelCounts: boolean = false;
   @Input() channels: Channel[] = [];
 
@@ -53,6 +55,7 @@ export class AccountToolbarComponent implements OnInit {
 
   selectAccount(account: Account) {
     this.selectedAccount = account;
+    this.onAccountClick.next(account);
   }
 
   getAllAccountsTooltip(): string {
