@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Profile } from 'src/app/model/profile.model';
-import { ProfileService } from 'src/app/services/profile.service';
+import { PersistenceService } from 'src/app/services/persistence.service';
 
 @Component({
   selector: 'app-settings',
@@ -12,16 +12,16 @@ export class SettingsComponent implements OnInit {
   public profile: Profile;
 
   constructor(
-    private profileService: ProfileService
+    private persistenceService: PersistenceService
     ) { 
   }
 
   ngOnInit(): void {
-    this.profile = this.profileService.loadProfile();
+    this.profile = this.persistenceService.loadProfile();
   }
 
   save() {
-    this.profileService.saveProfile(this.profile);
+    this.persistenceService.saveProfile(this.profile);
   }
 
 }

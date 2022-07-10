@@ -1,11 +1,11 @@
-import { ChannelService } from './../../services/channel.service';
-import { Component, OnInit, PACKAGE_ROOT_URL, ViewChild } from '@angular/core';
+import { YoutubeService } from 'src/app/services/youtube.service';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Channel } from 'src/app/model/channel.model';
-import { YoutubeService } from 'src/app/services/youtube.service';
 import { environment } from 'src/environments/environment';
 import { SNACKBAR_DEFAULT_CONFIG } from 'src/app/util/defaults';
 import { AccountToolbarComponent } from 'src/app/account-toolbar/account-toolbar.component';
+import { PersistenceService } from 'src/app/services/persistence.service';
 
 @Component({
   selector: 'app-subscriptions',
@@ -20,29 +20,13 @@ export class SubscriptionsComponent implements OnInit {
   channelURL: string = '';
 
   constructor(
-    private channelService: ChannelService,
+    private persistenceService: PersistenceService,
     private youtubeService: YoutubeService,
     private snackbar: MatSnackBar,
   ) { }
 
   ngOnInit(): void {
-    this.channels = this.channelService.loadChannels();
-
-    // TODO remove me#
-    /*
-    const jsonData = JSON.stringify(this.channels);
-    console.log('JSON data in kb: ' + jsonData.length/1024);
-    const csvData = this.channels
-      .map(v => v.account + '|' + v.id + '|' + v.name)
-      .join('|');
-    console.log('CSV data in kb: ' + csvData.length/1024);
-    
-    const output = this.compress(csvData);
-    console.log('CSV compressed in kb: ' + output.length/1024);
-    console.log(this.decompress(output).length);
-    console.log(csvData.length);
-    console.log(this.decompress(output) === csvData);
-    */
+    this.channels = this.persistenceService.loadChannels();
   }
 
   getChannelUrlExample() {
@@ -98,7 +82,7 @@ export class SubscriptionsComponent implements OnInit {
     const successHandlerFeeds = (xmlFeeds: string) => {
       const author = this.youtubeService.getAuthorFromFeed(xmlFeeds);
       this.channels.push(new Channel(accountName, channelID, author));
-      this.channelService.saveChannels(this.channels);
+      this.persistenceService.saveChannels(this.channels);
     }
     const errorHandlerFeeds = (errorMsg: string) => {
       this.snackbar.open(errorMsg, 'close', SNACKBAR_DEFAULT_CONFIG);
@@ -107,11 +91,11 @@ export class SubscriptionsComponent implements OnInit {
   }
 
   channelAccountChanged() {
-    this.channelService.saveChannels(this.channels);
+    this.persistenceService.saveChannels(this.channels);
   }
 
   deleteChannel(idx: number) {
     this.channels.splice(idx, 1);
-    this.channelService.saveChannels(this.channels);
+    this.persistenceService.saveChannels(this.channels);
   }
 }

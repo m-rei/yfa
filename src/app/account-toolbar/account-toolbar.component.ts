@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Account } from '../model/account.model';
 import { Channel } from '../model/channel.model';
-import { AccountService } from '../services/account.service';
+import { PersistenceService } from '../services/persistence.service';
 
 @Component({
   selector: 'app-account-toolbar',
@@ -24,11 +24,11 @@ export class AccountToolbarComponent implements OnInit {
   selectedAccount: Account = this.allAccounts;
   
   constructor(
-    private accountService: AccountService,
+    private persistenceService: PersistenceService,
   ) {}
 
   ngOnInit(): void {
-    this.accounts = this.accountService.loadAccounts();
+    this.accounts = this.persistenceService.loadAccounts();
   }
 
   selectAllAccounts() {

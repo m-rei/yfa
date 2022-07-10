@@ -1,8 +1,7 @@
 import { YoutubeService } from 'src/app/services/youtube.service';
-import { ChannelService } from './../../services/channel.service';
 import { SNACKBAR_DEFAULT_CONFIG } from './../../util/defaults';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { AccountService } from 'src/app/services/account.service';
+import { PersistenceService } from 'src/app/services/persistence.service';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Account } from 'src/app/model/account.model';
 import { Channel } from 'src/app/model/channel.model';
@@ -30,15 +29,14 @@ export class BackupComponent implements OnInit {
   importOpmlContent: string = null;
 
   constructor(
-    private accountSerice: AccountService,
-    private channelService: ChannelService,
+    private persistenceService: PersistenceService,
     private youtubeService: YoutubeService,
     private snackbar: MatSnackBar,
   ) { }
 
   ngOnInit(): void {
-    this.accounts = this.accountSerice.loadAccounts();
-    this.channels = this.channelService.loadChannels();
+    this.accounts = this.persistenceService.loadAccounts();
+    this.channels = this.persistenceService.loadChannels();
   }
 
   onFileSeleced(event: any) {
@@ -86,7 +84,7 @@ export class BackupComponent implements OnInit {
       }
     });
     const finishedHandler = () => {
-      this.channelService.saveChannels(this.channels);
+      this.persistenceService.saveChannels(this.channels);
       this.snackbar.open("finished importing!", 'close', SNACKBAR_DEFAULT_CONFIG);
       this.importing = false;
     }

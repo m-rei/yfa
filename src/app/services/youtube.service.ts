@@ -6,7 +6,7 @@ import { Video } from '../model/video.model';
   providedIn: 'root'
 })
 export class YoutubeService {
-  private static CHANNEL_URL = 'https://www.youtube.com/channel/';
+  private static CHANNEL_URL = 'https://youtube.com/channel/';
   private static FEEDS_URL = 'https://www.youtube.com/feeds/videos.xml?';
 
   constructor(
@@ -14,7 +14,7 @@ export class YoutubeService {
     ) { }
 
   redirectToChannel(channelID: string) {
-    document.location = 'https://youtube.com/channel/' + channelID;
+    document.location = YoutubeService.CHANNEL_URL + channelID;
   }
 
   extractChannelID(channelURL: string, successHandler: any, errorHandler: any) {

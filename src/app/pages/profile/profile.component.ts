@@ -1,7 +1,7 @@
-import { ProfileService } from 'src/app/services/profile.service';
 import { Profile } from 'src/app/model/profile.model';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { PersistenceService } from 'src/app/services/persistence.service';
 
 @Component({
   selector: 'app-profile',
@@ -14,12 +14,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
   profileChangeSubscription: Subscription;
 
   constructor(
-    private profileService: ProfileService,
+    private persistenceService: PersistenceService,
   ) { }
 
   ngOnInit(): void {
-    this.profile = this.profileService.loadProfile();
-    this.profileChangeSubscription = this.profileService.profileChanged.subscribe(profile => {
+    this.profile = this.persistenceService.loadProfile();
+    this.profileChangeSubscription = this.persistenceService.profileChanged.subscribe(profile => {
       this.profile = profile;
     })
   }

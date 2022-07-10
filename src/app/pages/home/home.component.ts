@@ -1,10 +1,9 @@
-import { VideoService } from './../../services/video.service';
+import { PersistenceService } from './../../services/persistence.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { YoutubeService } from 'src/app/services/youtube.service';
 import { AccountToolbarComponent } from 'src/app/account-toolbar/account-toolbar.component';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Channel } from 'src/app/model/channel.model';
-import { ChannelService } from 'src/app/services/channel.service';
 import { Video } from 'src/app/model/video.model';
 import { SNACKBAR_DEFAULT_CONFIG } from 'src/app/util/defaults';
 import { zip } from 'rxjs';
@@ -26,15 +25,14 @@ export class HomeComponent implements OnInit {
   accountVideos: Map<Account, Video[]> = new Map();
 
   constructor(
-    private channelService: ChannelService,
+    private persistenceService: PersistenceService,
     private youtubeService: YoutubeService,
-    private videoService: VideoService,
     private snackbar: MatSnackBar,
     ) { }
 
   ngOnInit(): void {
-    this.channels = this.channelService.loadChannels();
-    this.videos = this.videoService.loadVideos();
+    this.channels = this.persistenceService.loadChannels();
+    this.videos = this.persistenceService.loadVideos();
     this.processVideos();
   }
 
@@ -59,7 +57,7 @@ export class HomeComponent implements OnInit {
       this.videos = newVideos.sort((a,b) => {
         return moment(a.date).isAfter(b.date) ? -1 : 1;
       });
-      this.videoService.saveVideos(this.videos);
+      this.persistenceService.saveVideos(this.videos);
       this.processVideos();
       this.snackbar.open("finished syncing!", 'close', SNACKBAR_DEFAULT_CONFIG);
       this.toolbar.syncing = false;
