@@ -67,7 +67,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
         return moment(a.date).isAfter(b.date) ? -1 : 1;
       });
       this.persistenceService.saveVideos(this.videos);
-      this.processVideos();
+      this.doFilter();
       this.snackbar.open("finished syncing!", 'close', SNACKBAR_DEFAULT_CONFIG);
       this.toolbar.syncing = false;
     }
