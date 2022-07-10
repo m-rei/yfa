@@ -128,4 +128,12 @@ export class HomeComponent implements OnInit, AfterViewInit {
   toolbarAccountChanged() {
     this.paginator.firstPage();
   }
+
+  getYoutubeThumbnail(videoId: string) {
+    return this.youtubeService.getYoutubeThumbnailURL(videoId);
+  }
+
+  redirectToVideo(event: any, videoId: string) {
+    this.youtubeService.redirectToVideo(videoId);
+  }
 }

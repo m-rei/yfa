@@ -15,11 +15,17 @@
         [pageIndex]="0"
         [showFirstLastButtons]="true">
     </mat-paginator>
-    <div *ngFor="let video of getVideosForActiveAccount() | slice: (p.pageIndex)*p.pageSize : (p.pageIndex+1)*p.pageSize;">
-        <span>{{video.channelId}}</span>|
-        <span>{{getChannelByChannelId(video.channelId)?.name}}</span>|
-        <span>{{video.videoId}}</span>|
-        <span>{{video.title}}</span>|
-        <span>{{formattedDate(video.date)}}</span>
+    <div class="video-container">
+        <mat-card 
+            *ngFor="let video of getVideosForActiveAccount() | slice: (p.pageIndex)*p.pageSize : (p.pageIndex+1)*p.pageSize;"
+            (click)="redirectToVideo($event, video.videoId)">
+            <mat-card-title>{{video.title}}</mat-card-title>
+            <mat-card-subtitle [matTooltip]="getChannelByChannelId(video.channelId)?.account">
+                {{getChannelByChannelId(video.channelId)?.name}} - {{formattedDate(video.date)}}
+            </mat-card-subtitle>
+            <mat-card-content>
+                <img [src]="getYoutubeThumbnail(video.videoId)">
+            </mat-card-content>
+        </mat-card>
     </div>
 </div>

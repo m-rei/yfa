@@ -7,7 +7,9 @@ import { Video } from '../model/video.model';
 })
 export class YoutubeService {
   private static CHANNEL_URL = 'https://youtube.com/channel/';
+  private static VIDEO_URL = 'https://youtube.com/watch?v=';
   private static FEEDS_URL = 'https://www.youtube.com/feeds/videos.xml?';
+  private static THUMBNAIL_URL = 'https://img.youtube.com/vi/%s/sddefault.jpg'
 
   constructor(
     private httpClient: HttpClient
@@ -15,6 +17,10 @@ export class YoutubeService {
 
   redirectToChannel(channelID: string) {
     document.location = YoutubeService.CHANNEL_URL + channelID;
+  }
+
+  redirectToVideo(videoID: string) {
+    document.location = YoutubeService.VIDEO_URL + videoID;
   }
 
   extractChannelID(channelURL: string, successHandler: any, errorHandler: any) {
@@ -111,5 +117,9 @@ export class YoutubeService {
     } else {
       return channelURL + '&ucbcb=1'
     }
+  }
+
+  getYoutubeThumbnailURL(videoId: string): string {
+    return YoutubeService.THUMBNAIL_URL.replace('%s', videoId);
   }
 }
