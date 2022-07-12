@@ -133,7 +133,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     return this.youtubeService.getYoutubeThumbnailURL(videoId);
   }
 
-  redirectToVideo(event: any, videoId: string) {
-    this.youtubeService.redirectToVideo(videoId);
+  getYoutubeVideoURL(videoId: string) {
+    return this.youtubeService.getYoutubeVideoURL(videoId);
   }
 }

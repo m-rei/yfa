@@ -15,12 +15,8 @@ export class YoutubeService {
     private httpClient: HttpClient
     ) { }
 
-  redirectToChannel(channelID: string) {
-    document.location = YoutubeService.CHANNEL_URL + channelID;
-  }
-
-  redirectToVideo(videoID: string) {
-    document.location = YoutubeService.VIDEO_URL + videoID;
+  redirectToChannel(channelId: string) {
+    document.location = YoutubeService.CHANNEL_URL + channelId;
   }
 
   extractChannelID(channelURL: string, successHandler: any, errorHandler: any) {
@@ -121,5 +117,9 @@ export class YoutubeService {
 
   getYoutubeThumbnailURL(videoId: string): string {
     return YoutubeService.THUMBNAIL_URL.replace('%s', videoId);
+  }
+
+  getYoutubeVideoURL(videoId: string): string {
+    return YoutubeService.VIDEO_URL + videoId;
   }
 }
