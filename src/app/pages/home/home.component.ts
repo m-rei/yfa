@@ -54,8 +54,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
       const successHandler = (xmlFeeds: string) => {
         newVideos.push(...this.youtubeService.getVideosFromFeeds(xmlFeeds, channel.id));
-        finished++;
-        this.toolbar.progress100 = finished * 100 / this.channels.length;
+        const f = ++finished;
+        this.toolbar.progress100 = f * 100 / this.channels.length;
       }
       promises.push(
         this.youtubeService.getFeedsByChannelID(channel.id, successHandler)
