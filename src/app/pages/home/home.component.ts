@@ -43,6 +43,17 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.doFilter();
+    this.checkAutoSyncAndExecuteIfNecessary();
+  }
+
+  checkAutoSyncAndExecuteIfNecessary() {
+    const profile = this.persistenceService.loadProfile();
+    const lastSync = this.persistenceService.loadLastSync();
+    if (profile.autoSyncMinutes && profile.autoSyncMinutes > 0) {
+      if (!lastSync || moment().diff(lastSync, 'minutes') >= profile.autoSyncMinutes) {
+        this.toolbar.sync();
+      }
+    }
   }
 
   onSyncClick() {

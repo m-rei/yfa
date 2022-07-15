@@ -67,7 +67,7 @@ export class PersistenceService {
   public loadProfile(): Profile {
     let profile = localStorage.getItem(PersistenceService.LS_PROFILE_KEY);
     if (!profile) {
-      return new Profile(null, null);
+      return new Profile(null, null, 0);
     }
     return JSON.parse(profile);
   }

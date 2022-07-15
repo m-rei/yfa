@@ -1,14 +1,29 @@
 <div class="row">
   <mat-form-field>
     <mat-label>Name</mat-label>
-    <input matInput placeholder="Name..." [(ngModel)]="profile.name">
+    <input [(ngModel)]="profile.name"
+      matInput
+      placeholder="Name...">
   </mat-form-field>
 </div>
 <div class="row">
   <mat-form-field>
     <mat-label>Avatar URL</mat-label>
-    <input matInput placeholder="Avatar URL..." [(ngModel)]="profile.avatar">
+    <input [(ngModel)]="profile.avatar"
+      matInput
+      placeholder="Avatar URL...">
   </mat-form-field>
+</div>
+<div class="row">
+  <div class="col-sm-3">
+    <mat-form-field>
+      <mat-label>Auto-sync interval</mat-label>
+      <input [(ngModel)]="profile.autoSyncMinutes"
+        matInput type="number" step="5" min="0" max="120"
+        placeholder="Number in minutes, 0 means turned off..."
+        matTooltip="When refreshing the homepage and this amount of minutes have passed since last refresh, synx!">
+    </mat-form-field>
+  </div>
 </div>
 <div class="row">
   <div class="col-sm-12">
