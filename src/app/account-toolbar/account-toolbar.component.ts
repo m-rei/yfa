@@ -82,7 +82,14 @@ export class AccountToolbarComponent implements OnInit {
   }
 
   getLastSyncTooltip() {
-    return 'Last sync: ' + FormatUtil.formatDate(this.lastSync.toString());
+    let ret;
+    if (this.lastSync?.isValid()) {
+      ret = FormatUtil.formatDate(this.lastSync.toString());
+    } else {
+      ret = 'never';
+    }
+    console.log(ret);
+    return 'Last sync: ' + ret;
   }
 
   formattedProgress(): string {
