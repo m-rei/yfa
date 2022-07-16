@@ -45,8 +45,8 @@ export class SubscriptionsComponent implements OnInit, AfterViewInit {
     return environment.channelURLExample;
   }
 
-  redirectToAccount(channel: Channel) {
-    this.youtubeService.redirectToChannel(channel.id);
+  getChannelUrl(channel: Channel) {
+    return this.youtubeService.getYoutubeChannelURL(channel.id);
   }
 
   addChannel() {

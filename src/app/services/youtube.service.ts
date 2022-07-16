@@ -15,10 +15,6 @@ export class YoutubeService {
     private httpClient: HttpClient
     ) { }
 
-  redirectToChannel(channelId: string) {
-    document.location = YoutubeService.CHANNEL_URL + channelId;
-  }
-
   extractChannelID(channelURL: string, successHandler: any, errorHandler: any) {
     const consentRedirectDisabledChannelURL = this.disableConsentRedirect(channelURL);
 
@@ -113,6 +109,10 @@ export class YoutubeService {
     } else {
       return channelURL + '&ucbcb=1'
     }
+  }
+
+  getYoutubeChannelURL(channelId: string): string {
+    return YoutubeService.CHANNEL_URL + channelId;
   }
 
   getYoutubeThumbnailURL(videoId: string): string {

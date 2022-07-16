@@ -32,9 +32,9 @@
     </mat-paginator>
     <ng-container *ngFor="let channel of getChannelsForActiveAccount() | slice: (p.pageIndex)*p.pageSize : (p.pageIndex+1)*p.pageSize; let i = index">
         <div [ngClass]="{'row': true, 'odd-row': i % 2 == 1}">
-            <button mat-button class="col-sm-1" (click)="redirectToAccount(channel)">
+            <a href="{{getChannelUrl(channel)}}" class="col-sm-1">
                 <mat-icon>arrow_circle_right</mat-icon>
-            </button>
+            </a>
             <div class="col-sm-3">
                 <mat-form-field>
                     <mat-label>Account</mat-label>
