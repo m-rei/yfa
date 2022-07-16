@@ -6,5 +6,5 @@ RUN npm install
 RUN npm run build --prod
 
 FROM nginx:latest AS nginx
-COPY --from=build /dist/src/app/dist/vifa /usr/share/nginx/html
+COPY --from=build /dist/src/app/dist/yfa /usr/share/nginx/html
 EXPOSE 80

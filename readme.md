@@ -1,32 +1,35 @@
-# Problem
+# YFA - youtube feed aggregator
 
-Checking youtube subscriptions updates across multiple accounts in one place, instead of having to switch accounts and waitign for load times
+If you have multiple youtube accounts and wish to aggregate all their feeds visually into one place, this is a good solution for you
 
-# Solution
+## Requirements, setup
 
-Angular project with...:
+You only need docker, if you wish to run this locally. I recommend installing docker-desktop (windows).
 
-- account management
-  - add
-  - remove
-  - rename
-  - order id
-- subscription management
-  - select account
-    - add channel
-    - remove channel
-- tab view
-  - all, always rendered
-  - account 1 .. n
-  - refresh button with progress bar and cancel functionality
-    	- only when account # > 0
-    	- renders over view, locking it
-- persisted in local storage
+Simply execute the [docker_compose_start.cmd](docker_compose_start.cmd) file!
 
-# TODO
+^If you wish to host it somewhere, build the project and use the output (dist)!
 
-- compression for localstorage persistence:
-  - dont persist jsons, but CSV for channels
-    - so instead of: [{"account":"fun","id":"UC1v2bdQblPEcYdoKuJtY0lA","name":"Anna's Analysis"}]
-    - just use: fun|UC1v2bdQblPEcYdoKuJtY0lA|Anna's Analysis
-    - and gzip & b64
+## How to use with gifs
+
+### 1. Setting up your profile
+
+![1](res/1.gif)
+
+### 2. Setting up accounts
+
+![2](res/2.gif)
+
+### 3. Setting up subscriptions
+
+#### 3.1 Manually
+
+![3](res/3.1.gif)
+
+#### 3.2 Via import
+
+TODO
+
+### 4. Loading feeds
+
+![4](res/4.gif)

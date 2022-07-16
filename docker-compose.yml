@@ -3,7 +3,7 @@ version: "3"
 services:
   web:
     build: .
-    container_name: vifa
+    container_name: yfa
     restart: always
     ports: 
       - "8080:80"
