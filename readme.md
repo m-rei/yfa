@@ -2,13 +2,24 @@
 
 If you have multiple youtube accounts and wish to aggregate all their feeds visually into one place, this is a good solution for you
 
-## Requirements, setup
+## Setup
+
+### Local
 
 You only need docker, if you wish to run this locally. I recommend installing docker-desktop (windows).
 
 Simply execute the [docker_compose_start.cmd](docker_compose_start.cmd) file!
 
-^If you wish to host it somewhere, build the project and use the output (dist)!
+The app can be accessed by visiting: [localhost:8080](http://localhost:8080)
+
+### Hosting
+
+You need to install npm (14.19.3), use something like nvm for managing multiple npm installations. Once installed, run this command in the
+root directory:
+
+    npm run build
+
+The dist folder will contain the files you can then host!
 
 ## How to use with gifs
 
@@ -24,11 +35,11 @@ Simply execute the [docker_compose_start.cmd](docker_compose_start.cmd) file!
 
 #### 3.1 Manually
 
-![3](res/3.1.gif)
+![3.1](res/3.1.gif)
 
 #### 3.2 Via import
 
-TODO
+![3.2](res/3.2.gif)
 
 ### 4. Loading feeds
 
