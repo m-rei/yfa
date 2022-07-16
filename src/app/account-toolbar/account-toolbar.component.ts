@@ -88,7 +88,6 @@ export class AccountToolbarComponent implements OnInit {
     } else {
       ret = 'never';
     }
-    console.log(ret);
     return 'Last sync: ' + ret;
   }
 
