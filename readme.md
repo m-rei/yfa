@@ -21,7 +21,7 @@ root directory:
 
 The dist folder will contain the files you can then host!
 
-## How to use with gifs
+## How to - with gifs
 
 ### 1. Setting up your profile
 
