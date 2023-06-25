@@ -11,12 +11,13 @@ import { FormatUtil } from '../util/format';
   providedIn: 'root'
 })
 export class PersistenceService {
+  private static LS_SELECTED_ACCOUNT_KEY = 'selected-account';
   private static LS_ACCOUNTS_KEY = 'accounts';
   private static LS_CHANNELS_KEY = 'channels';
   private static LS_PROFILE_KEY = 'profile';
   private static LS_VIDEOS_KEY = 'videos';
   private static LS_LAST_SYNC_KEY = 'last_sync';
-  
+
   profileChanged: EventEmitter<Profile> = new EventEmitter();
 
   constructor() { }
@@ -33,7 +34,22 @@ export class PersistenceService {
     const accountsStringified = JSON.stringify(accounts);
     localStorage.setItem(PersistenceService.LS_ACCOUNTS_KEY, accountsStringified);
   }
-  
+
+  public loadSelectedAccount(loadedAccounts: Account[]) {
+    let selectedAccountName = localStorage.getItem(PersistenceService.LS_SELECTED_ACCOUNT_KEY);
+    if (!selectedAccountName) {
+      return null;
+    }
+    return loadedAccounts.find(a => a.name === selectedAccountName);
+  }
+
+  public saveSelectedAccount(account: Account) {
+    if (!account) {
+      return;
+    }
+    localStorage.setItem(PersistenceService.LS_SELECTED_ACCOUNT_KEY, account.name);
+  }
+
   public loadChannels(): Channel[] {
     let channels = localStorage.getItem(PersistenceService.LS_CHANNELS_KEY);
     if (!channels) {

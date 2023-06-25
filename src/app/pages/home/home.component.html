@@ -6,11 +6,11 @@
                 <mat-label>Filter</mat-label>
                 <input matInput [(ngModel)]="filterText" (keyup)="filterChanged()">
             </mat-form-field>
-        </div>            
+        </div>
     </div>
     <mat-paginator #p
         fixed
-        [length]="getVideosForActiveAccount().length"
+        [length]="getVideosForActiveAccount()?.length ?? 0"
         [pageSize]="15"
         [pageIndex]="0"
         [showFirstLastButtons]="true">

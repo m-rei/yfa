@@ -27,26 +27,32 @@ export class AccountToolbarComponent implements OnInit {
   allAccounts: Account = new Account("*", 0);
   lackingAccounts: Account = new Account("-", 0);
   selectedAccount: Account = this.allAccounts;
-  
+
   constructor(
     private persistenceService: PersistenceService,
   ) {}
 
   ngOnInit(): void {
     this.accounts = this.persistenceService.loadAccounts();
+    let selAccount = this.persistenceService.loadSelectedAccount(this.accounts);
+    if (selAccount) {
+      this.selectAccount(selAccount);
+    }
     this.lastSync = this.persistenceService.loadLastSync();
   }
 
   selectAllAccounts() {
     this.selectedAccount = this.allAccounts;
+    this.persistenceService.saveSelectedAccount(this.selectedAccount);
   }
 
   allAccountsSelected() {
     return this.selectedAccount == this.allAccounts;
   }
-  
+
   selectLackingAccounts() {
     this.selectedAccount = this.lackingAccounts;
+    this.persistenceService.saveSelectedAccount(this.selectedAccount);
   }
 
   lackingAccountsSelected() {
@@ -55,6 +61,7 @@ export class AccountToolbarComponent implements OnInit {
 
   selectAccount(account: Account) {
     this.selectedAccount = account;
+    this.persistenceService.saveSelectedAccount(this.selectedAccount);
     this.onAccountClick.next(account);
   }
 
@@ -62,12 +69,12 @@ export class AccountToolbarComponent implements OnInit {
     if (!this.showChannelCounts) return '';
     return ' (' + this.channels.length + ')';
   }
-  
+
   getLackingAccountsTooltip(): string {
     if (!this.showChannelCounts) return '';
     return ' (' + this.channels.filter(c => !c.account).length + ')';
   }
-  
+
   getAccountsTooltip(account: Account): string {
     if (!this.showChannelCounts) return '';
     return ' (' + this.channels.filter(c => c.account == account.name).length + ')';
