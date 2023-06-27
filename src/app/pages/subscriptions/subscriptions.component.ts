@@ -86,7 +86,11 @@ export class SubscriptionsComponent implements OnInit, AfterViewInit {
   }
 
   deleteChannel(idx: number) {
-    idx = this.channels.indexOf(this.filteredChannels[idx]);
+    const activeChannels = this.getChannelsForActiveAccount();
+    if (idx >= activeChannels?.length ?? 0) {
+      return
+    }
+    idx = this.channels.indexOf(activeChannels[idx]);
     this.channels.splice(idx, 1);
     this.persistenceService.saveChannels(this.channels);
     this.doFilter();
@@ -125,7 +129,8 @@ export class SubscriptionsComponent implements OnInit, AfterViewInit {
     if (this.toolbar.allAccountsSelected()) {
       return this.filteredChannels;
     }
-    return this.accountChannels.get(this.toolbar.selectedAccount);
+    let ret = this.accountChannels.get(this.toolbar.selectedAccount);
+    return ret ?? [];
   }
 
   toolbarAccountChanged() {
