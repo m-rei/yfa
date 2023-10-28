@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Youtube Feeds</title>
+		<link rel="icon" type="image/x-icon" href="favicon.png">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+	</head>
+
+	<body>
+		<div class="container">
+			<div class="row">
+				<ul class="nav nav-tabs">
+				  <li class="nav-item">
+					<a id="feeds-tab" data-container-id="feeds-container" class="nav-link active" aria-current="page" href="#">feeds</a>
+				  </li>
+				  <li class="nav-item">
+					<a id="setup-tab" data-container-id="setup-container" class="nav-link" href="#">setup</a>
+				  </li>
+				</ul>
+			</div>
+			<br>
+
+			<div id="feeds-container">
+				<div class="row">
+					<div class="col">
+						<button id='reload-feeds-button' type="button" class="btn btn-primary">reload</button>
+					</div>
+				</div>
+
+				<div class="progress my-2">
+				  <div id='progress-bar' class="progress-bar" role="progressbar" style="width: 100%"></div>
+				</div>
+
+				<div id="feed-cards-container" class="d-flex flex-wrap justify-content-around">
+				</div>
+			</div>
+
+			<div id="setup-container" class="row d-none">
+				<div class="row">
+				  <div class="col">
+					<input id="channel-input" type="text" class="form-control" placeholder="channel" aria-label="channel">
+				  </div>
+				  <div class="col-auto">
+					<button id="add-channel-button" type="submit" class="btn btn-primary mb-3">+</button>
+				  </div>
+				</div>
+
+				<ul id="channel-list-group" class="list-group"></ul>
+			</div>
+		</div>
+
+		<script>
+			const CHANNEL_URL = 'https://youtube.com/channel/';
+			const VIDEO_URL = 'https://youtube.com/watch?v=';
+			const FEEDS_URL = 'https://www.youtube.com/feeds/videos.xml?';
+			const THUMBNAIL_URL = 'https://img.youtube.com/vi/%s/sddefault.jpg';
+
+// UTILITY FUNCTIONS
+
+			function disableConsentRedirect(channelURL) {
+				if (channelURL.indexOf('?') == -1) {
+				  return channelURL + '?ucbcb=1'
+				} else {
+				  return channelURL + '&ucbcb=1'
+				}
+		  	}
+
+			function extractChannelID(channelURL, successHandler, errorHandler) {
+				const consentRedirectDisabledChannelURL = disableConsentRedirect(channelURL);
+
+				const URL_CONTAINS_CHANNEL_ID_RE = /com\/channel\/([^?"\/]+)/g;
+				let urlContainsChannelID = [...consentRedirectDisabledChannelURL.matchAll(URL_CONTAINS_CHANNEL_ID_RE)];
+				if (urlContainsChannelID && urlContainsChannelID.length == 1 && urlContainsChannelID[0].length == 2) {
+				  successHandler(urlContainsChannelID[0][1]);
+				  return;
+				}
+
+				fetch(consentRedirectDisabledChannelURL)
+					.then(resp => resp.text())
+					.then(resp => {
+						const EXTRACT_CHANNEL_FROM_YOUTUBE_BODY_META_DATA_RE = /href="ios-app[^"]*/g;
+						const extractedChannelIDBlock = resp.match(EXTRACT_CHANNEL_FROM_YOUTUBE_BODY_META_DATA_RE); 
+						if (extractedChannelIDBlock && extractedChannelIDBlock.length == 1) { 
+							urlContainsChannelID = [...extractedChannelIDBlock[0].matchAll(URL_CONTAINS_CHANNEL_ID_RE)]; 
+							if (urlContainsChannelID && urlContainsChannelID.length == 1 && urlContainsChannelID[0].length == 2) { 
+								successHandler(urlContainsChannelID[0][1]); 
+							} 
+						}
+					})
+					.catch(err => {
+						errorHandler('CORS must be disabled for this to work -> use addons to disable it! Check if the URL is correct. Error message: ' + err.message);
+					});
+			}
+
+			function getFeedsByChannelID(channelID) {
+				const url = FEEDS_URL + 'channel_id=' + channelID;
+				return fetch(url)
+					.then(resp => {
+						if (!resp.ok) {
+							throw new Error(resp.status);
+						}
+						return resp.text()
+					});
+			}
+
+			function getAuthorFromFeed(xmlFeeds) {
+				const xmlDoc = new DOMParser().parseFromString(xmlFeeds, "text/xml");
+				return xmlDoc.querySelector('feed author name').textContent;
+			}
+
+			function getChannelIdFromFeed(xmlFeeds) {
+				const xmlDoc = new DOMParser().parseFromString(xmlFeeds, "text/xml");
+				const ret = xmlDoc.querySelector('feed id').textContent.split(':');
+				if (ret.length == 0) return '';
+				return ret[ret.length-1];
+			}
+
+			function getVideosFromFeed(xmlFeed, channelID, latestNVideos = 5) {
+				const xmlDoc = new DOMParser().parseFromString(xmlFeed, "text/xml");
+				const author = xmlDoc.querySelector('feed author name').textContent;
+				const entries = xmlDoc.querySelectorAll('feed entry');
+				let ret = [];
+				for (let i = 0; i < Math.min(entries.length, latestNVideos); i++) {
+					const entry = entries[i];
+					const idArr = entry.querySelector('id').textContent.split(':');
+					if (idArr.length == 0) continue; 
+					ret.push({
+						"id": channelID,
+						"videoId": idArr[idArr.length-1],
+						"title": entry.querySelector('title').textContent,
+						"author": author,
+						"date":  entry.querySelector('published').textContent,
+					});
+				}
+				return ret;
+			}
+
+			function getChannelsFromLocalStorage() {
+				return JSON.parse(localStorage.getItem('channels')) ?? [];
+			}
+
+			function addChannelToLocalStorage(name, id) {
+				let channels = getChannelsFromLocalStorage();
+
+				if (channels.find(x => x.id === id)) {
+					return;
+				}
+
+				channels.push({
+					"n": name,
+					"id": id,
+				});
+
+				localStorage.setItem('channels', JSON.stringify(channels));
+			}
+
+			function removeChannelFromLocalStorage(id) {
+				let channels = getChannelsFromLocalStorage();
+				const idx = channels.findIndex(x => x.id === id);
+
+				if (idx === -1) {
+					return;
+				}
+
+				channels.splice(idx, 1);
+
+				localStorage.setItem('channels', JSON.stringify(channels));
+			}			
+
+// UI RELATED STUFF
+
+			const feedsTab = document.querySelector('#feeds-tab');
+			const setupTab = document.querySelector('#setup-tab');
+			const tabs = [feedsTab, setupTab];
+
+			const feedsContainer = document.querySelector('#feeds-container');
+			const setupContainer = document.querySelector('#setup-container');
+			const containers = [feedsContainer, setupContainer];
+
+			const feedCardsContainer = feedsContainer.querySelector('#feed-cards-container');
+			const reloadFeedsBtn = feedsContainer.querySelector('#reload-feeds-button');
+			const progressBar = feedsContainer.querySelector('#progress-bar');
+			let feedVideos = [];
+
+			const channelInput = document.querySelector('#channel-input');
+			const addChannelBtn = document.querySelector('#add-channel-button');
+			const channelListGroup = setupContainer.querySelector('#channel-list-group');
+
+			const tabClickHandler = (event) => {
+				if (event.srcElement.classList.contains('active')) return;
+
+				for (let tab of tabs) {
+					if (tab.isEqualNode(event.srcElement)) {
+						tab.classList.add('active');
+					} else {
+						tab.classList.remove('active');
+					}
+				}
+
+				const selectedContainer = containers.find(c => c.id === event.srcElement.dataset.containerId);
+				if (!selectedContainer.classList.contains('d-none')) return;
+				for (let container of containers) {
+					if (container === selectedContainer) {
+						container.classList.remove('d-none');
+					} else {
+						container.classList.add('d-none');
+					}
+				}
+			};
+			for (let tab of tabs) {
+				tab.addEventListener('click', tabClickHandler);
+			}
+
+			async function reloadFeeds() {
+				const newFeedVideos = [];
+				const channels = getChannelsFromLocalStorage();
+				let i = 0;
+				const errMsgs = [];
+				for (let channel of channels) {
+					const percentage = i / channels.length;
+					progressBar.style = `width: ${i}%;`;
+
+					const feed = await getFeedsByChannelID(channel.id)
+						.catch(err => {
+							errMsgs.push(`${err} - ${channel.n} (${channel.id}])`)
+							return ''; 
+						});
+					if (feed) {
+						const videos = getVideosFromFeed(feed, channel.id);
+						newFeedVideos.push(...videos);
+					}
+					
+					i++;
+				}
+				if (errMsgs.length > 0) {
+					alert(errMsgs.join('\n'));
+				}
+
+				progressBar.style = `width: 100%;`;
+				newFeedVideos.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+				feedVideos = newFeedVideos;
+				renderFeeds();
+			}
+			reloadFeedsBtn.addEventListener('click', reloadFeeds);
+
+			function renderFeeds() {
+				let newInnerHTML = '';
+				for (let video of feedVideos) {
+					let newElement = `
+						<a href="${VIDEO_URL + video.videoId}" class="text-decoration-none my-1">
+							<div class="card" style="width: 18rem;">
+							  <img src="${THUMBNAIL_URL.replace('%s', video.videoId)}" class="card-img-top">
+							  <div class="card-header text-center">
+								${video.title}
+							  </div>
+							  <ul class="list-group list-group-flush">
+								<li class="list-group-item text-center">${video.author}</li>
+								<li class="list-group-item text-center">${video.date}</li>
+							  </ul>
+							</div>
+						</a>
+					`;
+					newInnerHTML += newElement;
+				}
+				feedCardsContainer.innerHTML = newInnerHTML;
+			}
+
+			function deleteChannelBtn(event) {
+				event.preventDefault();
+
+				const cid = event.srcElement.dataset.cid;
+				if (!cid) return;
+
+				removeChannelFromLocalStorage(cid);
+				renderChannels(channelListGroup, deleteChannelBtn);
+			}
+
+			function renderChannels(channelListGroup, clickHandler) {
+				let newInnerHTML = '';
+				let channels = getChannelsFromLocalStorage();
+				for (let channel of channels) {
+					let newElement = `
+						<li class="list-group-item">
+							<a href="">
+								<button type="button" class="btn btn-danger me-2" id="remove-channel-button" data-cid="${channel.id}">X</button>
+								${channel.n}
+							</a>
+						</li>
+					`;
+					newInnerHTML += newElement;
+				}
+				channelListGroup.innerHTML = newInnerHTML;
+
+				let deleteButtons = channelListGroup.querySelectorAll('#remove-channel-button');
+				for (let deleteButton of deleteButtons) {
+					deleteButton.addEventListener('click', clickHandler);
+				}
+			}
+
+			addChannelBtn.addEventListener('click', (event) => {
+				extractChannelID(channelInput.value,
+					(channelID) => {
+						getFeedsByChannelID(channelID)
+							.then(feeds => {
+								const channelName = getAuthorFromFeed(feeds);
+								addChannelToLocalStorage(channelName, channelID);
+								renderChannels(channelListGroup, deleteChannelBtn);
+							});
+					},
+					(errorMsg) => {console.log(errorMsg)}
+					);
+				channelInput.value = '';
+			});
+
+			renderChannels(channelListGroup, deleteChannelBtn);
+			reloadFeeds();
+		</script>
+	</body>
+</html>
