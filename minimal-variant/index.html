@@ -11,7 +11,7 @@
 
 	<body>
 		<div class="container">
-			<div class="row">
+			<div class="row my-2">
 				<ul class="nav nav-tabs">
 				  <li class="nav-item">
 					<a id="feeds-tab" data-container-id="feeds-container" class="nav-link active" aria-current="page" href="#">feeds</a>
@@ -21,17 +21,18 @@
 				  </li>
 				</ul>
 			</div>
-			<br>
 
 			<div id="feeds-container">
-				<div class="row">
-					<div class="col">
-						<button id='reload-feeds-button' type="button" class="btn btn-primary">reload</button>
+				<div style="height: 50px">
+					<div id="progress-bar-container" class="progress my-2 d-none">
+					  <div id='progress-bar' class="progress-bar" role="progressbar" style="width: 100%"></div>
 					</div>
-				</div>
 
-				<div class="progress my-2">
-				  <div id='progress-bar' class="progress-bar" role="progressbar" style="width: 100%"></div>
+					<div id="reload-feeds-button-container" class="row my-2">
+						<div class="col text-center">
+							<button id='reload-feeds-button' type="button" class="btn btn-primary">reload</button>
+						</div>
+					</div>
 				</div>
 
 				<div id="feed-cards-container" class="d-flex flex-wrap justify-content-around">
@@ -181,8 +182,10 @@
 			const containers = [feedsContainer, setupContainer];
 
 			const feedCardsContainer = feedsContainer.querySelector('#feed-cards-container');
-			const reloadFeedsBtn = feedsContainer.querySelector('#reload-feeds-button');
-			const progressBar = feedsContainer.querySelector('#progress-bar');
+			const reloadFeedsBtnContainer = feedsContainer.querySelector('#reload-feeds-button-container');
+			const reloadFeedsBtn = reloadFeedsBtnContainer.querySelector('#reload-feeds-button');
+			const progressBarContainer = feedsContainer.querySelector('#progress-bar-container');
+			const progressBar = progressBarContainer .querySelector('#progress-bar');
 			let feedVideos = [];
 
 			const channelInput = document.querySelector('#channel-input');
@@ -214,7 +217,19 @@
 				tab.addEventListener('click', tabClickHandler);
 			}
 
+			function flipVisibilityForReloadBtnAndProgressBar(showReloadBtn) {
+				if (showReloadBtn) {
+					reloadFeedsBtnContainer.classList.remove("d-none");
+					progressBarContainer.classList.add("d-none");
+				} else {
+					reloadFeedsBtnContainer.classList.add("d-none");
+					progressBarContainer.classList.remove("d-none");
+				}
+			}
+
 			async function reloadFeeds() {
+				flipVisibilityForReloadBtnAndProgressBar(false);
+
 				const newFeedVideos = [];
 				const channels = getChannelsFromLocalStorage();
 				let i = 0;
@@ -243,6 +258,10 @@
 				newFeedVideos.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 				feedVideos = newFeedVideos;
 				renderFeeds();
+
+				setTimeout(_ => {
+					flipVisibilityForReloadBtnAndProgressBar(true);
+				}, 250);
 			}
 			reloadFeedsBtn.addEventListener('click', reloadFeeds);
 
