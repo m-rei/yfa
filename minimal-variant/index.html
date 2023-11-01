@@ -359,7 +359,7 @@
 				for (let channel of channels) {
 					let newElement = `
 						<li class="list-group-item">
-							<a href="">
+							<a href="${CHANNEL_URL + channel.id}" class="text-decoration-none">
 								<button type="button" class="btn btn-danger me-2" id="remove-channel-button" data-cid="${channel.id}">X</button>
 								${channel.n}
 							</a>
