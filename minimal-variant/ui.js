@@ -51,6 +51,10 @@ function tabClick(tabName) {
 }
 
 async function reloadFeeds() {
+    if (data.progressBarWidth != null) {
+        return;
+    }
+
     data.channels = getChannelsFromLocalStorage();
     data.progressBarWidth = 0;
     renderTemplate(tplCtx);

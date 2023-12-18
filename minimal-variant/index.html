@@ -44,6 +44,7 @@
 					<a tpl-for="feedVideos; video" href="{{VIDEO_URL + video.videoId}}" class="text-decoration-none my-1">
 						<div class="card-anim-wrapper">
 							<div class="card" style="width: 18rem;">
+
 								<img src="{{THUMBNAIL_URL.replace('%s', video.videoId)}}" class="card-img-top">
 								<div class="card-header text-center">
 								{{video.title}}
@@ -71,14 +72,14 @@
 				</div>
 
 				<ul id="channel-list-group" class="list-group">
-					<li tpl-for="channels; c" class="list-group-item">
-						<a href="{{CHANNEL_URL + c.id}}" class="text-decoration-none">
+					<li tpl-for="channels; chan" class="list-group-item">
+						<a href="{{CHANNEL_URL + chan.id}}" class="text-decoration-none">
 							<button type="button"
 								class="btn btn-danger me-2"
-								onclick="deleteChannelClick(event, '{{c.id}}')">
+								onclick="deleteChannelClick(event, '{{chan.id}}')">
 								<i class="bi bi-trash-fill"></i>
 							</button>
-							{{c.n}}
+							{{chan.n}}
 						</a>
 					</li>
 				</ul>
