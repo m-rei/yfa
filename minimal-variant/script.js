@@ -1,4 +1,4 @@
-const CORS_PROXY = 'https://corsproxy.io/?';
+var CORS_PROXY = 'https://corsproxy.io/?';
 const FEEDS_URL = 'https://www.youtube.com/feeds/videos.xml?';
 
 function disableConsentRedirect(channelURL) {
@@ -77,8 +77,4 @@ function getVideosFromFeed(xmlFeed, channelID, latestNVideos = 5) {
         });
     }
     return ret;
-}
-
-function getChannelsFromLocalStorage() {
-    return JSON.parse(localStorage.getItem('channels')) ?? [];
 }

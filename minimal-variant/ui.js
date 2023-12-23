@@ -1,3 +1,7 @@
+const LS_TAB = 'tab';
+const LS_CHANNELS = 'channels';
+const LS_PROXY_URL = 'proxyUrl';
+
 let data = {
     CHANNEL_URL: 'https://youtube.com/channel/',
     VIDEO_URL: 'https://youtube.com/watch?v=',
@@ -5,6 +9,8 @@ let data = {
     feedVideos: [],
     channels: getChannelsFromLocalStorage(),
     progressBarWidth: null,
+    proxyUrlInput: CORS_PROXY,
+    channelInput: '',
     tabs: [
         {
             name: 'feeds',
@@ -27,7 +33,7 @@ function addChannel(name, id) {
         "id": id,
     });
 
-    localStorage.setItem('channels', JSON.stringify(data.channels));
+    localStorage.setItem(LS_CHANNELS, JSON.stringify(data.channels));
     return true;
 }
 
@@ -38,7 +44,7 @@ function deleteChannel(id) {
     }
 
     data.channels.splice(idx, 1);
-    localStorage.setItem('channels', JSON.stringify(data.channels));
+    localStorage.setItem(LS_CHANNELS, JSON.stringify(data.channels));
 
     return true;
 }
@@ -47,6 +53,7 @@ function tabClick(tabName) {
     for (let dataTab of data.tabs) {
         dataTab.active = dataTab.name === tabName;
     }
+    localStorage.setItem(LS_TAB, tabName);
     renderTemplate(tplCtx);
 }
 
@@ -90,10 +97,15 @@ async function reloadFeeds() {
     }, 250);
 }
 
+function setProxyURL() {
+    CORS_PROXY = data.proxyUrlInput;
+    localStorage.setItem(LS_PROXY_URL, CORS_PROXY);
+}
+
 function addChannelClick() {
-    let channelInput = document.querySelector('#channel-input');
-    extractChannelID(channelInput.value,
+    extractChannelID(data.channelInput,
         (channelID) => {
+            data.channelInput = '';
             getFeedsByChannelID(channelID)
                 .then(feeds => {
                     const channelName = getAuthorFromFeed(feeds);
@@ -115,5 +127,19 @@ function deleteChannelClick(e, id) {
     }
 }
 
+function loadAppSettingsFromLocalStorage() {
+    CORS_PROXY = localStorage.getItem(LS_PROXY_URL) ?? CORS_PROXY;
+    data.proxyUrlInput = CORS_PROXY;
+    const activeTabName = localStorage.getItem(LS_TAB) ?? data.tabs[0].name;
+    for (let tab of data.tabs) {
+        tab.active = activeTabName === tab.name;
+    }
+}
+
+function getChannelsFromLocalStorage() {
+    return JSON.parse(localStorage.getItem(LS_CHANNELS)) ?? [];
+}
+
+loadAppSettingsFromLocalStorage();
 let tplCtx = initTemplate('#app', data);
 reloadFeeds();

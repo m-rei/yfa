@@ -61,8 +61,19 @@
 
 			<div tpl-if="tabs[1].active" class="row">
 				<div class="row">
+					<div class="col">
+						<input tpl-model="proxyUrlInput" type="text" class="form-control" placeholder="proxy-url" aria-label="proxy-url">
+					</div>
+					<div class="col-auto">
+						<button type="submit" 
+							onclick="setProxyURL()"
+							class="btn btn-primary mb-3">+</button>
+					</div>
+				</div>
+
+				<div class="row">
 				  <div class="col">
-					<input id="channel-input" type="text" class="form-control" placeholder="channel" aria-label="channel">
+					<input tpl-model="channelInput" type="text" class="form-control" placeholder="channel" aria-label="channel">
 				  </div>
 				  <div class="col-auto">
 					<button type="submit" 
