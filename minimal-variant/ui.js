@@ -141,5 +141,5 @@ function getChannelsFromLocalStorage() {
 }
 
 loadAppSettingsFromLocalStorage();
-let tplCtx = initTemplate('#app', data);
+let tplCtx = initTemplate('#app', data, 'invisible');
 reloadFeeds();
