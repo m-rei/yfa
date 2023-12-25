@@ -45,7 +45,7 @@
 						<div class="card-anim-wrapper">
 							<div class="card" style="width: 18rem;">
 
-								<img src="{{THUMBNAIL_URL.replace('%s', video.videoId)}}" class="card-img-top">
+								<img [src]="THUMBNAIL_URL.replace('%s', video.videoId)" class="card-img-top">
 								<div class="card-header text-center">
 								{{video.title}}
 								</div>
