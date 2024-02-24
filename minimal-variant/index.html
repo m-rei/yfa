@@ -110,7 +110,7 @@
             </div>
 
             <div id="lock" class="{{!locked ? 'invisible' : ''}}">
-                <form onsubmit="unlockUI()">
+                <form onsubmit="return unlockUI()">
                     <input type="password" tpl-model="passInput">
                     <button type="submit">unlock</button>
                 </form>
