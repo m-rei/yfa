@@ -13,88 +13,108 @@
 	</head>
 
 	<body>
-		<div id="app" class="container invisible">
-			<div class="row my-2">
-				<ul class="nav nav-tabs">
-					<li class="nav-item" tpl-for="tabs; tab">
-						<a	class="nav-link {{tab.active ? 'active' : ''}}"
-							aria-current="{{tab.active ? 'page' : 'false'}}"
-							onclick="tabClick('{{tab.name}}')"
-							href="#">{{tab.name}}</a>
-					</li>
-				</ul>
-			</div>
+        <div id="app" class="container invisible">
+            <div class="{{locked ? 'blurred' : ''}}"> 
+                <div class="row my-2">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item" tpl-for="tabs; tab">
+                            <a	class="nav-link {{tab.active ? 'active' : ''}}"
+                                aria-current="{{tab.active ? 'page' : 'false'}}"
+                                onclick="tabClick('{{tab.name}}')"
+                                href="#">{{tab.name}}</a>
+                        </li>
+                    </ul>
+                </div>
 
-			<div tpl-if="tabs[0].active">
-				<div style="height: 65px">
-					<div class="progress my-2 {{progressBarWidth == null ? 'd-none' : ''}}">
-					  <div class="progress-bar" role="progressbar" style="width: {{progressBarWidth}}%"></div>
-					</div>
+                <div tpl-if="tabs[0].active">
+                    <div style="height: 65px">
+                        <div class="progress my-2 {{progressBarWidth == null ? 'd-none' : ''}}">
+                          <div class="progress-bar" role="progressbar" style="width: {{progressBarWidth}}%"></div>
+                        </div>
 
-					<div class="row my-2">
-						<div class="col text-center">
-							<button type="button" class="btn btn-primary" onclick="reloadFeeds()">
-								<i class="bi bi-arrow-clockwise"></i>
-							</button>
-						</div>
-					</div>
-				</div>
+                        <div class="row my-2">
+                            <div class="col text-center">
+                                <button type="button" class="btn btn-primary" onclick="reloadFeeds()">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
-				<div id="feed-cards-container" class="d-flex flex-wrap justify-content-around">
-					<a tpl-for="feedVideos; video" href="{{VIDEO_URL + video.videoId}}" class="text-decoration-none my-1">
-						<div class="card-anim-wrapper">
-							<div class="card" style="width: 18rem;">
+                    <div id="feed-cards-container" class="d-flex flex-wrap justify-content-around">
+                        <a tpl-for="feedVideos; video" href="{{VIDEO_URL + video.videoId}}" class="text-decoration-none my-1">
+                            <div class="card-anim-wrapper">
+                                <div class="card" style="width: 18rem;">
 
-								<img [src]="THUMBNAIL_URL.replace('%s', video.videoId)" class="card-img-top">
-								<div class="card-header text-center">
-								{{video.title}}
-								</div>
-								<ul class="list-group list-group-flush">
-								<li class="list-group-item text-center">{{video.author}}</li>
-								<li class="list-group-item text-center">{{video.date}}</li>
-								</ul>
-							</div>
-						</div>
-					</a>
-				</div>
-			</div>
+                                    <img [src]="THUMBNAIL_URL.replace('%s', video.videoId)" class="card-img-top">
+                                    <div class="card-header text-center">
+                                    {{video.title}}
+                                    </div>
+                                    <ul class="list-group list-group-flush">
+                                    <li class="list-group-item text-center">{{video.author}}</li>
+                                    <li class="list-group-item text-center">{{video.date}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
 
-			<div tpl-if="tabs[1].active" class="row">
-				<div class="row">
-					<div class="col">
-						<input tpl-model="proxyUrlInput" type="text" class="form-control" placeholder="proxy-url" aria-label="proxy-url">
-					</div>
-					<div class="col-auto">
-						<button type="submit" 
-							onclick="setProxyURL()"
-							class="btn btn-primary mb-3">+</button>
-					</div>
-				</div>
+                <div tpl-if="tabs[1].active" class="row">
+                    <div class="row">
+                        <div class="col">
+                            <input tpl-model="proxyUrlInput" type="text" class="form-control" placeholder="proxy-url" aria-label="proxy-url">
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" 
+                                onclick="setProxyURL()"
+                                class="btn btn-primary mb-3">+</button>
+                        </div>
+                    </div>
 
-				<div class="row">
-				  <div class="col">
-					<input tpl-model="channelInput" type="text" class="form-control" placeholder="channel" aria-label="channel">
-				  </div>
-				  <div class="col-auto">
-					<button type="submit" 
-						onclick="addChannelClick()"
-						class="btn btn-primary mb-3">+</button>
-				  </div>
-				</div>
+                    <div class="row">
+                        <div class="col">
+                            <input tpl-model="passInput" type="password" class="form-control" placeholder="pass" aria-label="pass">
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" 
+                                onclick="setPass()"
+                                class="btn btn-primary mb-3">+</button>
+                        </div>
+                    </div>
 
-				<ul id="channel-list-group" class="list-group">
-					<li tpl-for="channels; chan" class="list-group-item">
-						<a href="{{CHANNEL_URL + chan.id}}" class="text-decoration-none">
-							<button type="button"
-								class="btn btn-danger me-2"
-								onclick="deleteChannelClick(event, '{{chan.id}}')">
-								<i class="bi bi-trash-fill"></i>
-							</button>
-							{{chan.n}}
-						</a>
-					</li>
-				</ul>
-			</div>
+                    <div class="row">
+                      <div class="col">
+                        <input tpl-model="channelInput" type="text" class="form-control" placeholder="channel" aria-label="channel">
+                      </div>
+                      <div class="col-auto">
+                        <button type="submit" 
+                            onclick="addChannelClick()"
+                            class="btn btn-primary mb-3">+</button>
+                      </div>
+                    </div>
+
+                    <ul id="channel-list-group" class="list-group">
+                        <li tpl-for="channels; chan" class="list-group-item">
+                            <a href="{{CHANNEL_URL + chan.id}}" class="text-decoration-none">
+                                <button type="button"
+                                    class="btn btn-danger me-2"
+                                    onclick="deleteChannelClick(event, '{{chan.id}}')">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                                {{chan.n}}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="lock" class="{{!locked ? 'invisible' : ''}}">
+                <form onsubmit="unlockUI()">
+                    <input type="password" tpl-model="passInput">
+                    <button type="submit">unlock</button>
+                </form>
+            </div>
 		</div>
 
 		<script src="script.js"></script>

@@ -23,12 +23,12 @@ function extractChannelID(channelURL, successHandler, errorHandler) {
         .then(resp => resp.text())
         .then(resp => {
             const EXTRACT_CHANNEL_FROM_YOUTUBE_BODY_META_DATA_RE = /href="ios-app[^"]*/g;
-            const extractedChannelIDBlock = resp.match(EXTRACT_CHANNEL_FROM_YOUTUBE_BODY_META_DATA_RE); 
-            if (extractedChannelIDBlock && extractedChannelIDBlock.length == 1) { 
-                urlContainsChannelID = [...extractedChannelIDBlock[0].matchAll(URL_CONTAINS_CHANNEL_ID_RE)]; 
-                if (urlContainsChannelID && urlContainsChannelID.length == 1 && urlContainsChannelID[0].length == 2) { 
-                    successHandler(urlContainsChannelID[0][1]); 
-                } 
+            const extractedChannelIDBlock = resp.match(EXTRACT_CHANNEL_FROM_YOUTUBE_BODY_META_DATA_RE);
+            if (extractedChannelIDBlock && extractedChannelIDBlock.length == 1) {
+                urlContainsChannelID = [...extractedChannelIDBlock[0].matchAll(URL_CONTAINS_CHANNEL_ID_RE)];
+                if (urlContainsChannelID && urlContainsChannelID.length == 1 && urlContainsChannelID[0].length == 2) {
+                    successHandler(urlContainsChannelID[0][1]);
+                }
             }
         })
         .catch(err => {
@@ -56,7 +56,7 @@ function getChannelIdFromFeed(xmlFeeds) {
     const xmlDoc = new DOMParser().parseFromString(xmlFeeds, "text/xml");
     const ret = xmlDoc.querySelector('feed id').textContent.split(':');
     if (ret.length == 0) return '';
-    return ret[ret.length-1];
+    return ret[ret.length - 1];
 }
 
 function getVideosFromFeed(xmlFeed, channelID, latestNVideos = 5) {
@@ -67,14 +67,14 @@ function getVideosFromFeed(xmlFeed, channelID, latestNVideos = 5) {
     for (let i = 0; i < Math.min(entries.length, latestNVideos); i++) {
         const entry = entries[i];
         const idArr = entry.querySelector('id').textContent.split(':');
-        if (idArr.length == 0) continue; 
+        if (idArr.length == 0) continue;
         ret.push({
             "id": channelID,
-            "videoId": idArr[idArr.length-1],
+            "videoId": idArr[idArr.length - 1],
             "title": entry.querySelector('title').textContent,
             "author": author,
-            "date":  entry.querySelector('published').textContent,
+            "date": entry.querySelector('published').textContent,
         });
     }
     return ret;
-}
+} 

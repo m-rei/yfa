@@ -1,6 +1,7 @@
 const LS_TAB = 'tab';
 const LS_CHANNELS = 'channels';
 const LS_PROXY_URL = 'proxyUrl';
+const LS_PASS_HASH = 'passHash';
 
 let data = {
     CHANNEL_URL: 'https://youtube.com/channel/',
@@ -11,6 +12,9 @@ let data = {
     progressBarWidth: null,
     proxyUrlInput: CORS_PROXY,
     channelInput: '',
+    passInput: '',
+    passHash: '',
+    locked: true,
     tabs: [
         {
             name: 'feeds',
@@ -72,20 +76,20 @@ async function reloadFeeds() {
         const feed = await getFeedsByChannelID(channel.id)
             .catch(err => {
                 errMsgs.push(`${err} - ${channel.n} (${channel.id}])`)
-                return ''; 
+                return '';
             });
         if (feed) {
             const videos = getVideosFromFeed(feed, channel.id);
             newFeedVideos.push(...videos);
         }
-        
+
         data.progressBarWidth++;
         renderTemplate(tplCtx);
     }
     if (errMsgs.length > 0) {
         alert(errMsgs.join('\n'));
     }
-    newFeedVideos.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    newFeedVideos.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     data.progressBarWidth = 100;
     data.feedVideos = newFeedVideos;
@@ -115,8 +119,8 @@ function addChannelClick() {
                     }
                 });
         },
-        (errorMsg) => {console.log(errorMsg)}
-        );
+        (errorMsg) => { console.log(errorMsg) }
+    );
     channelInput.value = '';
 }
 
@@ -128,6 +132,8 @@ function deleteChannelClick(e, id) {
 }
 
 function loadAppSettingsFromLocalStorage() {
+    data.passHash = localStorage.getItem(LS_PASS_HASH) ?? '';
+    data.locked = data.passHash?.length > 0;
     CORS_PROXY = localStorage.getItem(LS_PROXY_URL) ?? CORS_PROXY;
     data.proxyUrlInput = CORS_PROXY;
     const activeTabName = localStorage.getItem(LS_TAB) ?? data.tabs[0].name;
@@ -138,6 +144,41 @@ function loadAppSettingsFromLocalStorage() {
 
 function getChannelsFromLocalStorage() {
     return JSON.parse(localStorage.getItem(LS_CHANNELS)) ?? [];
+}
+
+async function digestMessage(message) {
+    const msgUint8 = new TextEncoder().encode(message); // encode as (utf-8) Uint8Array
+    const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8); // hash the message
+    const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
+    const hashHex = hashArray
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join(""); // convert bytes to hex string
+    return hashHex;
+}
+
+function setPass() {
+    if (!data.passInput) {
+        localStorage.removeItem(LS_PASS_HASH);
+        return;
+    }
+    digestMessage(data.passInput).then(hash => {
+        data.passHash = hash;
+        data.passInput = '';
+        localStorage.setItem(LS_PASS_HASH, hash);
+        renderTemplate(tplCtx);
+    });
+}
+
+function unlockUI() {
+    digestMessage(data.passInput).then(hash => {
+        if (hash !== data.passHash) {
+            return;
+        }
+        data.passInput = '';
+        data.locked = false;
+        renderTemplate(tplCtx);
+    });
+    return false;
 }
 
 loadAppSettingsFromLocalStorage();
