@@ -1,124 +1,221 @@
 <!doctype html>
 
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
 	<head>
 		<title>Youtube Feeds</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="icon" type="image/x-icon" href="favicon.png">
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-		<link rel="stylesheet" href="style.css">
+        <script src="https://cdn.tailwindcss.com/3.4.5"></script>
 		<script src="https://m-rei.github.io/assets/js/live-tpl.min.js"></script>
 	</head>
 
-	<body>
-        <div id="app" class="container invisible">
-            <div class="{{locked ? 'blurred' : ''}}">
-                <div class="row my-2">
-                    <ul class="nav nav-tabs">
-                        <li class="nav-item" tpl-for="tabs; tab">
-                            <a	class="nav-link {{tab.active ? 'active' : ''}}"
-                                aria-current="{{tab.active ? 'page' : 'false'}}"
+	<body class="dark:bg-neutral-800">
+        <div id="app" class="invisible mx-auto">
+            <div class="border shadow-sm p-6 dark:bg-neutral-800 dark:border-neutral-700">
+                <div class="{{locked ? 'blur-xl pointer-events-none' : ''}} flex flex-col bg-white border shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-700 dark:shadow-neutral-700/70">
+                    <div class="bg-gray-100 border-b rounded-t-xl pt-3 px-4 md:pt-4 md:px-5 dark:bg-neutral-800 dark:border-neutral-700">
+                        <nav class="flex gap-x-2">
+                            <a
+                                tpl-for="tabs; tab"
                                 onclick="tabClick('{{tab.name}}')"
-                                href="#">{{tab.name}}</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div tpl-if="tabs[0].active">
-                    <div style="height: 65px">
-                        <div class="progress my-2 {{progressBarWidth == null ? 'd-none' : ''}}">
-                          <div class="progress-bar" role="progressbar" style="width: {{progressBarWidth}}%"></div>
-                        </div>
-
-                        <div class="row my-2">
-                            <div class="col text-center">
-                                <button type="button" class="btn btn-primary" onclick="reloadFeeds()">
-                                    <i class="bi bi-arrow-clockwise"></i>
-                                </button>
-                            </div>
-                        </div>
+                                aria-current="{{tab.active ? 'page' : 'false'}}"
+                                class="{{tab.active
+                                    ? '-mb-px py-3 px-4 bg-white text-sm font-medium text-center border border-b-transparent text-gray-500 rounded-t-lg hover:text-gray-700 focus:outline-none focus:text-gray-700 focus:z-10 dark:bg-neutral-900 dark:border-neutral-700 dark:border-b-gray-800 dark:hover:text-neutral-400 dark:focus:text-neutral-400'
+                                    : '-mb-px py-3 px-4 text-sm font-medium text-center border-b text-gray-500 rounded-t-lg  hover:text-gray-700 focus:outline-none focus:text-gray-700 focus:z-10 dark:border-neutral-700 dark:hover:text-neutral-400 dark:focus:text-neutral-400'
+                                }}"
+                                href="#"
+                            >
+                                {{tab.name}}
+                            </a>
+                        </nav>
                     </div>
 
-                    <div id="feed-cards-container" class="d-flex flex-wrap justify-content-around">
-                        <a tpl-for="feedVideos; video" href="{{VIDEO_URL + video.videoId}}" class="text-decoration-none my-1">
-                            <div class="card-anim-wrapper">
-                                <div class="card" style="width: 18rem;">
-
-                                    <img [src]="THUMBNAIL_URL.replace('%s', video.videoId)" class="card-img-top">
-                                    <div class="card-header text-center">
-                                    {{video.title}}
-                                    </div>
-                                    <ul class="list-group list-group-flush">
-                                    <li class="list-group-item text-center">{{video.author}}</li>
-                                    <li class="list-group-item text-center">{{video.date}}</li>
-                                    </ul>
+                    <div
+                        tpl-if="tabs[0].active"
+                        class="p-4 text-center md:py-7 md:px-5">
+                        
+                        <div class="w-full h-16">
+                            <div tpl-if="progressBarWidth != null">
+                                <div class="flex w-full h-1.5 bg-gray-200 rounded-full overflow-hidden dark:bg-neutral-700" role="progressbar"
+                                    aria-valuenow="{{progressBarWidth}}" aria-valuemin="0" aria-valuemax="100">
+                                    <div class="flex flex-col justify-center rounded-full overflow-hidden bg-blue-600 text-xs text-white text-center whitespace-nowrap transition duration-500 dark:bg-blue-500"
+                                        style="width: {{progressBarWidth}}%"></div>
                                 </div>
                             </div>
-                        </a>
-                    </div>
-                </div>
 
-                <div tpl-if="tabs[1].active" class="row">
-                    <div class="row">
-                        <div class="col">
-                            <input tpl-model="proxyUrlInput" type="text" class="form-control" placeholder="proxy-url" aria-label="proxy-url">
-                        </div>
-                        <div class="col-auto">
-                            <button type="submit"
-                                onclick="setProxyURL()"
-                                class="btn btn-primary mb-3">+</button>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col">
-                            <input tpl-model="passInput" type="password" class="form-control" placeholder="pass" aria-label="pass">
-                        </div>
-                        <div class="col-auto">
-                            <button type="submit"
-                                onclick="setPass()"
-                                class="btn btn-primary mb-3">+</button>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                      <div class="col">
-                        <input tpl-model="channelInput" type="text" class="form-control" placeholder="channel" aria-label="channel">
-                      </div>
-                      <div class="col-auto">
-                        <button type="submit"
-                            onclick="addChannelClick()"
-                            class="btn btn-primary mb-3">+</button>
-                      </div>
-                    </div>
-
-                    <ul id="channel-list-group" class="list-group">
-                        <li tpl-for="channels; chan" class="list-group-item">
-                            <a href="{{CHANNEL_URL + chan.id}}" class="text-decoration-none">
-                                <button type="button"
-                                    class="btn btn-danger me-2"
-                                    onclick="deleteChannelClick(event, '{{chan.id}}')">
-                                    <i class="bi bi-trash-fill"></i>
+                            <div tpl-if="progressBarWidth == null" class="flex">
+                                <button
+                                    type="button"
+                                    onclick="reloadFeeds()"
+                                    class="py-3 px-4 mx-auto inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 text-gray-500 hover:border-blue-600 hover:text-blue-600 focus:outline-none focus:border-blue-600 focus:text-blue-600 disabled:opacity-50 disabled:pointer-events-none dark:border-neutral-700 dark:text-neutral-400 dark:hover:text-blue-500 dark:hover:border-blue-600 dark:focus:text-blue-500 dark:focus:border-blue-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                        class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                    </svg>
                                 </button>
-                                {{chan.n}}
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap justify-around w-full items-center items-stretch">
+                            <a
+                                tpl-for="feedVideos; video"
+                                href="{{VIDEO_URL + video.videoId}}"
+                                class="w-72">
+                                <div class="flex flex-col bg-white border shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-700 dark:shadow-neutral-700/70 my-1 hover:border-blue-600 hover:text-blue-600 focus:border-blue-600 focus:text-blue-600 dark:hover:text-blue-500 dark:hover:border-blue-600 dark:focus:text-blue-500 dark:focus:border-blue-600">
+                                    <img
+                                        class="w-full h-auto rounded-t-xl"
+                                        [src]="THUMBNAIL_URL.replace('%s', video.videoId)"
+                                        alt="Card Image">
+                                    <div class="p-4 md:p-5">
+                                        <h3 class="text-lg font-bold text-gray-800 dark:text-white">
+                                            {{video.title}}
+                                        </h3>
+                                        <p class="mt-1 text-gray-500 dark:text-neutral-400">
+                                            {{video.author}}
+                                        </p>
+                                        <p class="mt-5 text-xs text-gray-500 dark:text-neutral-500">
+                                            {{video.date}}
+                                        </p>
+                                    </div>
+                                </div>
                             </a>
-                        </li>
-                    </ul>
+                        </div>
+                    </div>
+
+                    <div
+                        tpl-if="tabs[1].active"
+                        class="p-4 text-center md:py-7 md:px-5">
+                        
+                        <div>
+                            <div class="flex rounded-lg shadow-sm">
+                                <span
+                                    class="px-4 inline-flex items-center w-36 rounded-s-md border border-e-0 border-gray-200 bg-gray-50 text-sm text-gray-500 dark:bg-neutral-700 dark:border-neutral-700 dark:text-neutral-400">
+                                    Proxy-URL
+                                </span>
+                                <input
+                                    type="text"
+                                    tpl-model="proxyUrlInput"
+                                    class="py-2 px-3 block w-full border-y-2 border-gray-100 shadow-sm rounded-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
+                                <button
+                                    type="button"
+                                    onclick="setProxyURL()"
+                                    class="py-3 px-4 w-36 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-e-md border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                        class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex rounded-lg shadow-sm mt-2">
+                                <span
+                                    class="px-4 inline-flex items-center w-36 rounded-s-md border border-e-0 border-gray-200 bg-gray-50 text-sm text-gray-500 dark:bg-neutral-700 dark:border-neutral-700 dark:text-neutral-400">
+                                    Pass
+                                </span>
+                                <input
+                                    tpl-model="passInput"
+                                    type="password"
+                                    class="py-2 px-3 block w-full border-y-2 border-gray-100 shadow-sm rounded-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
+                                <button
+                                    type="button"
+                                    onclick="setPass()"
+                                    class="py-3 px-4 w-36 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-e-md border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                        class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex rounded-lg shadow-sm my-2">
+                                <span
+                                    class="px-4 inline-flex items-center w-36 rounded-s-md border border-e-0 border-gray-200 bg-gray-50 text-sm text-gray-500 dark:bg-neutral-700 dark:border-neutral-700 dark:text-neutral-400">
+                                    Channel
+                                </span>
+                                <input
+                                    type="text"
+                                    tpl-model="channelInput"
+                                    class="py-2 px-3 block w-full border-y-2 border-gray-100 shadow-sm rounded-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
+                                <button
+                                    type="button"
+                                    onclick="addChannelClick()"
+                                    class="py-3 px-4 w-36 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-e-md border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                        class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700">
+
+                        <ul class="max-w flex flex-col">
+                            <li
+                                tpl-for="channels; chan"
+                                class="inline-flex items-center gap-x-2 py-3 px-4 text-sm font-medium odd:bg-gray-100 bg-white border border-gray-200 text-gray-800 -mt-px first:rounded-t-lg first:mt-0 last:rounded-b-lg dark:odd:bg-neutral-800 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white">
+                                <button
+                                    type="button"
+                                    onclick="deleteChannelClick(event, '{{chan.id}}')"
+                                    class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-red-500 text-red-500 hover:border-red-400 hover:text-red-400 focus:outline-none focus:border-red-400 focus:text-red-400 disabled:opacity-50 disabled:pointer-events-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                        class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                    </svg>
+                                </button>
+                                <a
+                                    href="{{CHANNEL_URL + chan.id}}"
+                                    class="text-blue-600 hover:text-blue-500 decoration-2 focus:outline-none">
+                                    {{chan.n}}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div
+                    id="lock"
+                    class="{{!locked ? 'invisible' : ''}} absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                >
+                    <form onsubmit="return unlockUI()">
+                        <div>
+                            <div class="flex rounded-lg shadow-sm my-2">
+                                <span
+                                    class="px-4 inline-flex items-center w-36 rounded-s-md border border-e-0 border-gray-200 bg-gray-50 text-sm text-gray-500 dark:bg-neutral-700 dark:border-neutral-700 dark:text-neutral-400">
+                                    Pass
+                                </span>
+                                <input
+                                    autofocus
+                                    type="password"
+                                    tpl-model="passInput"
+                                    class="py-2 px-3 block w-full border-y-2 border-gray-100 shadow-sm rounded-none text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
+                                <button
+                                    type="submit"
+                                    onclick="addChannelClick()"
+                                    class="py-3 px-4 w-36 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-e-md border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                        class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
-
-            <div id="lock" class="{{!locked ? 'invisible' : ''}}">
-                <form onsubmit="return unlockUI()">
-                    <input type="password" tpl-model="passInput" autofocus>
-                    <button type="submit">unlock</button>
-                </form>
-            </div>
-		</div>
+        </div>
 
 		<script src="script.js"></script>
 		<script src="ui.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 	</body>
 </html>
