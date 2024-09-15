@@ -36,15 +36,20 @@
                         class="p-4 text-center md:py-7 md:px-5">
                         
                         <div class="w-full h-16">
-                            <div tpl-if="progressBarWidth != null">
-                                <div class="flex w-full h-1.5 bg-gray-200 rounded-full overflow-hidden dark:bg-neutral-700" role="progressbar"
-                                    aria-valuenow="{{progressBarWidth}}" aria-valuemin="0" aria-valuemax="100">
+                            <div tpl-if="progressBarPercentage != null">
+                                <div 
+                                    class="flex w-full h-1.5 bg-gray-200 rounded-full overflow-hidden dark:bg-neutral-700" 
+                                    role="progressbar" 
+                                    aria-valuenow="{{progressBarPercentage}}" 
+                                    aria-valuemin="0" 
+                                    aria-valuemax="100">
                                     <div class="flex flex-col justify-center rounded-full overflow-hidden bg-blue-600 text-xs text-white text-center whitespace-nowrap transition duration-500 dark:bg-blue-500"
-                                        style="width: {{progressBarWidth}}%"></div>
+                                        style="width: {{progressBarPercentage}}%">
+                                    </div>
                                 </div>
                             </div>
 
-                            <div tpl-if="progressBarWidth == null" class="flex">
+                            <div tpl-if="progressBarPercentage == null" class="flex">
                                 <button
                                     type="button"
                                     onclick="reloadFeeds()"

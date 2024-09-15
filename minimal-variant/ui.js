@@ -9,7 +9,7 @@ let data = {
     THUMBNAIL_URL: 'https://img.youtube.com/vi/%s/sddefault.jpg',
     feedVideos: [],
     channels: getChannelsFromLocalStorage(),
-    progressBarWidth: null,
+    progressBarPercentage: null,
     proxyUrlInput: CORS_PROXY,
     channelInput: '',
     passInput: '',
@@ -62,16 +62,19 @@ function tabClick(tabName) {
 }
 
 async function reloadFeeds() {
-    if (data.progressBarWidth != null) {
+    if (data.progressBarPercentage != null) {
         return;
     }
 
     data.channels = getChannelsFromLocalStorage();
-    data.progressBarWidth = 0;
+    data.progressBarPercentage = 0;
     renderTemplate(tplCtx);
 
     const newFeedVideos = [];
     const errMsgs = [];
+    const step = data.channels?.length > 0
+        ? (1 / data.channels.length) * 100
+        : 0;
     for (let channel of data.channels) {
         const feed = await getFeedsByChannelID(channel.id)
             .catch(err => {
@@ -83,7 +86,8 @@ async function reloadFeeds() {
             newFeedVideos.push(...videos);
         }
 
-        data.progressBarWidth++;
+        data.progressBarPercentage += step;
+        console.log(data.progressBarPercentage);
         renderTemplate(tplCtx);
     }
     if (errMsgs.length > 0) {
@@ -91,12 +95,12 @@ async function reloadFeeds() {
     }
     newFeedVideos.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-    data.progressBarWidth = 100;
+    data.progressBarPercentage = 100;
     data.feedVideos = newFeedVideos;
     renderTemplate(tplCtx);
 
     setTimeout(_ => {
-        data.progressBarWidth = null;
+        data.progressBarPercentage = null;
         renderTemplate(tplCtx);
     }, 250);
 }
@@ -121,7 +125,7 @@ function addChannelClick() {
         },
         (errorMsg) => { console.log(errorMsg) }
     );
-    channelInput.value = '';
+    data.channelInput.value = '';
 }
 
 function deleteChannelClick(e, id) {
